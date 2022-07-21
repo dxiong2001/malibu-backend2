@@ -186,4 +186,5 @@ def quoteToSection(sections, summarized_sections, quotes):
       if(q['text'] in s):
         Section['quotes'].append(q)
     SectionList.append(Section)
+    i+=1
   return SectionList
