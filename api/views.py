@@ -18,10 +18,9 @@ def api_home(request, *args, **kwargs):
 
     print(data)
     data['params'] = dict(request.GET)
-    # url = data['params']['url'][0]
+    url = data['params']['url'][0]
 
-
-    url='https%3A%2F%2Fwww.popsci.com%2Fscience%2Fomicron-coronavirus-variant%2F'
+    #url='https%3A%2F%2Fwww.popsci.com%2Fscience%2Fomicron-coronavirus-variant%2F'
     
     
     url = urllib.parse.unquote(url)
@@ -45,6 +44,9 @@ def api_home(request, *args, **kwargs):
     people, people_extended = getNamedEntities(processed_text)
     attributed_quotes = attribute_quote(people_extended, quotes)
 
+    authorEntity = createSingularEntity(author)
+    publisherEntity = createSingularEntity(publisher)
+
     QuotesList = []
     for a in attributed_quotes:
         QuotesList.append(createQuote(a[0],a[1]))
@@ -56,7 +58,7 @@ def api_home(request, *args, **kwargs):
     #print(url)
     #print(title, author,date,image)
     #print(attributed_quotes)
-    Tweet = {'id_': "1232", 'author': author, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisher, 'sections': SectionList}
+    Tweet = {'id_': "1232", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
     # data['headers'] = dict(request.headers)
     # data['content_type'] = request.content_type
     return JsonResponse(Tweet)

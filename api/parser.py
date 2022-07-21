@@ -82,7 +82,7 @@ def getArticleInfo(page_content):
   image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
   image = image_html.get("src")
 
-  subtitle = header.find('p', class_='Article-excerpt').get_text()
+  subtitle = header.find('p', class_='Article-excerpt').get_text().replace("\n","")
 
   return title, subtitle, author, date, image
 
@@ -168,6 +168,12 @@ def createQuote(name, quote):
   author = createEntity(name, user_name, screen_name, profile_img)
   return {'author': author, 'text': quote}
   
+def createSingularEntity(name):
+  is_verified, screen_name, user_name, profile_img = getTwitterInfo(name)
+  return createEntity(name, user_name, screen_name, profile_img)
+
+
+
 def generateEntitiesList(people):
   entities = []
   for p in people:
