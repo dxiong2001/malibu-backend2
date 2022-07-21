@@ -7,6 +7,7 @@ import re
 import unicodedata
 import spacy
 from decouple import config
+import os
 
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
@@ -126,7 +127,7 @@ def attribute_quote(people, quotes):
 
 def getTwitterInfo(name):
   
-  key = 'Bearer ' + config("BEARER")
+  key = 'Bearer ' + os.getenv('BEARER', 'Optional default value')
   headers = {
       'Authorization': key,
   }
@@ -151,8 +152,8 @@ def getImage(name):
   querystring = {"q": name,"pageNumber":"1","pageSize":"1","autoCorrect":"true"}
 
   headers = {
-    "X-RapidAPI-Key": config("X_RAPID_KEY"),
-    "X-RapidAPI-Host": config("X_RAPID_HOST")
+    "X-RapidAPI-Key": os.getenv('X_RAPID_KEY', 'Optional default value'),
+    "X-RapidAPI-Host": os.getenv('X_RAPID_HOST', 'Optional default value'),
   }
 
   response = requests.request("GET", url, headers=headers, params=querystring)
