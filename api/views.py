@@ -61,4 +61,4 @@ def api_home(request, *args, **kwargs):
     Tweet = {'id_': "1232", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
     # data['headers'] = dict(request.headers)
     # data['content_type'] = request.content_type
-    return JsonResponse(Tweet)
+    return JsonResponse([Tweet])
