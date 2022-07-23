@@ -137,7 +137,7 @@ def getTwitterInfo(name):
   response = requests.request("GET", url, headers=headers, params=querystring)
   try:
     data = response.json()[0]
-    print("test")
+    
     #print(data)
     is_verified = data['verified']
     screen_name = data['screen_name']
@@ -150,7 +150,7 @@ def getTwitterInfo(name):
 
 def getImage(name):
   #Important note!: daily limit is 100 requests
-  #used today so far: 2
+  #used today so far: 0
   url = "https://contextualwebsearch-websearch-v1.p.rapidapi.com/api/Search/ImageSearchAPI"
 
   querystring = {"q": name,"pageNumber":"1","pageSize":"1","autoCorrect":"true"}
