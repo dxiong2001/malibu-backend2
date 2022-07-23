@@ -135,14 +135,18 @@ def getTwitterInfo(name):
   url = "https://api.twitter.com/1.1/users/search.json"
 
   response = requests.request("GET", url, headers=headers, params=querystring)
-  data = response.json()[0]
-  
-  is_verified = data['verified']
-  screen_name = data['screen_name']
-  user_name = data['name']
-  profile_img = data['profile_image_url']
+  try:
+    data = response.json()[0]
+    print("test")
+    #print(data)
+    is_verified = data['verified']
+    screen_name = data['screen_name']
+    user_name = data['name']
+    profile_img = data['profile_image_url']
 
-  return is_verified, screen_name, user_name, profile_img
+    return is_verified, screen_name, user_name, profile_img
+  except:
+    return False, "NA", "NA", "NA"
 
 def getImage(name):
   #Important note!: daily limit is 100 requests
