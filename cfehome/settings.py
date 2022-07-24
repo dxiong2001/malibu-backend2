@@ -90,11 +90,13 @@ WSGI_APPLICATION = 'cfehome.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'Client': {
-            'host': os.getenv('MONGO_KEY', 'Optional default value'),
-            'name': 'Tweets',
+        'NAME': 'Tweets',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://dbUser:Nic0wkcG1C8FA92i@cluster0.wl71okm.mongodb.net/?retryWrites=true&w=majority',
             'authMechanism': 'SCRAM-SHA-1',
         },
+        
     }
 }
 
