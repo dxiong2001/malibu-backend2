@@ -6,5 +6,5 @@ from api.models import Tweet
 class TweetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tweet
-        fields=('_id', 'url', 'tweet')
+        fields=('url', 'tweet')
 

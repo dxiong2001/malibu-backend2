@@ -4,9 +4,8 @@ import uuid
 # Create your models here.
 
 class Tweet(models.Model):
-    
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    url = models.TextField()
+
+    url = models.TextField(default="")
     tweet = models.JSONField()
 
 

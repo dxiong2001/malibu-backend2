@@ -4,6 +4,6 @@ from . import views
 
 
 urlpatterns = [
-    path('tweet', views.api_home),
+    path('tweet/', views.api_home),
     path('tweets', views.tweetsApi)
 ]
