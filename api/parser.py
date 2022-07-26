@@ -127,7 +127,7 @@ def attribute_quote(people, quotes):
 
 def getTwitterInfo(name):
   
-  key = 'Bearer ' + os.getenv('BEARER', 'Optional default value')
+  key = 'Bearer ' + os.environ.get('BEARER')
   
   headers = {
       'Authorization': key,

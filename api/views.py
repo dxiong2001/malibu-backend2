@@ -60,7 +60,7 @@ def api_home(request, *args, **kwargs):
 
     
 
-    #url='https%3A%2F%2Fwww.popsci.com%2Fscience%2Fomicron-coronavirus-variant%2F'
+    
     
     print("test")
     

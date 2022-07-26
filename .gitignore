@@ -1,3 +1,4 @@
 .env
 __pycache__/
 cfehome/__pycache__/
+api/__pycache__/
