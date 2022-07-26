@@ -53,7 +53,7 @@ def api_home(request, *args, **kwargs):
         for t in tweet_objects:
             db_tweet_url = t['url']
             if(db_tweet_url==article_url):
-                return JsonResponse(json.loads(t['tweet']), safe=False)
+                return JsonResponse([json.loads(t['tweet'])], safe=False)
         
     except:
         pass
