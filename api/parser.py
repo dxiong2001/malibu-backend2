@@ -21,6 +21,9 @@ def get_html(url):
 
 def getArticleTextSections(page_content):
   body_text = page_content.find('div', class_='Article-bodyText')
+  remove_strong = body_text.find_all('strong')
+  for r in remove_strong:
+    r.extract()
   body_text_p = body_text.find_all('p', class_='')
 
   processed_text1 = [item.get_text() for item in body_text_p]
