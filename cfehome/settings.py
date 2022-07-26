@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -87,16 +87,17 @@ WSGI_APPLICATION = 'cfehome.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+print(config('PASSWORD'))
+print(config('USERNAME_MONGO'))
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'Tweets',
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': os.environ.get('MONGO_KEY'),
-            'username': os.environ.get('USERNAME_MONGO'),
-            'password': os.environ.get('PASSWORD'),
+            'host': config('MONGO_KEY'),
+            'username': config('USERNAME_MONGO'),
+            'password': config('PASSWORD'),
             'authMechanism': 'SCRAM-SHA-1',
             'authSource':'admin'
         },

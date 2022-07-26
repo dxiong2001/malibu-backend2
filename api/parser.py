@@ -127,7 +127,7 @@ def attribute_quote(people, quotes):
 
 def getTwitterInfo(name):
   
-  key = 'Bearer ' + os.environ.get('BEARER')
+  key = 'Bearer ' + config('BEARER')
   
   headers = {
       'Authorization': key,
@@ -157,8 +157,8 @@ def getImage(name):
   querystring = {"q": name,"pageNumber":"1","pageSize":"1","autoCorrect":"true"}
 
   headers = {
-    "X-RapidAPI-Key": os.getenv('X_RAPID_KEY', 'Optional default value'),
-    "X-RapidAPI-Host": os.getenv('X_RAPID_HOST', 'Optional default value'),
+    "X-RapidAPI-Key": config('X_RAPID_KEY', 'Optional default value'),
+    "X-RapidAPI-Host": config('X_RAPID_HOST', 'Optional default value'),
   }
 
   response = requests.request("GET", url, headers=headers, params=querystring)
