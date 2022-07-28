@@ -79,8 +79,8 @@ def getArticleInfo(page_content):
   article_info = header.find('p', class_='Article-author').get_text()
 
   title = header.find('h1', class_='u-entryTitle').get_text()
-  author = article_info.split("|")[0].replace("\n                    ","").replace("\n              ","")[2:]
-  date = article_info.split("|")[1].replace("\n    \n    Updated ","").replace("\n  \n","")
+  author = article_info.split("|")[0].replace("\n","").strip()[2:].strip()
+  date = article_info.split("|")[1].replace("\n","").strip()
 
   image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
   image = image_html.get("src")
