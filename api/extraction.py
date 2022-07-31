@@ -8,8 +8,13 @@ from gensim.models import Word2Vec
 from scipy import spatial
 import networkx as nx
 
-nltk.download('punkt')
-nltk.download('stopwords')
+try:
+  nltk.data.find('tokenizers/punkt')
+  nltk.data.find('corpora/stopwords')
+  
+except:
+  nltk.download('punkt')
+  nltk.download('stopwords')
 
 
 def textrank(text):
