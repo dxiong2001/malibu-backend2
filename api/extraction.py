@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from gensim.models import Word2Vec
 from scipy import spatial
 import networkx as nx
+import time
 
 try:
   nltk.data.find('tokenizers/punkt')
@@ -26,7 +27,7 @@ def textrank(text):
   stop_words = stopwords.words('english')
   sentence_tokens=[[words for words in sentence.split(' ') if words not in stop_words] for sentence in sentences_clean]
 
-  w2v=Word2Vec(sentence_tokens,vector_size=200,min_count=1,epochs=1000)
+  w2v=Word2Vec(sentence_tokens,vector_size=120,min_count=1,epochs=500)
   sentence_embeddings=[[w2v.wv[word][0] for word in words] for words in sentence_tokens]
   max_len=max([len(tokens) for tokens in sentence_tokens])
   sentence_embeddings=[np.pad(embedding,(0,max_len-len(embedding)),'constant') for embedding in sentence_embeddings]

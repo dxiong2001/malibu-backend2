@@ -87,8 +87,7 @@ WSGI_APPLICATION = 'cfehome.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-print(config('PASSWORD'))
-print(config('USERNAME_MONGO'))
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',

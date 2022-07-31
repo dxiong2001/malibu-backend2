@@ -5,10 +5,15 @@ from .extraction import Summarizer, textrank
 from django.views.decorators.csrf import csrf_exempt
 import urllib
 import nltk.tokenize.texttiling as tt
+import time
 
 from api.models import Tweet
 from api.serializers import TweetSerializer
 
+from rq import Queue
+from .worker import conn
+
+q = Queue(connection=conn)
 
 def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
@@ -29,7 +34,7 @@ def tweetsApi(request, *args, **kwargs):
 
 
 def api_home(request, *args, **kwargs):
-
+    start_time = time.time()
     # body = request.body
     
     body_data = {}
@@ -48,7 +53,7 @@ def api_home(request, *args, **kwargs):
         tweets_serializer=TweetSerializer(tweets, many=True)
         tweet_objects = tweets_serializer.data
         
-        print(tweet_objects)
+        #print(tweet_objects)
 
         for t in tweet_objects:
             db_tweet_url = t['url']
@@ -59,24 +64,20 @@ def api_home(request, *args, **kwargs):
         pass
 
     
-
-    
-    
-    print("test")
-    
     
     page_content = get_html(url)
     processed_text = getArticleTextSections(page_content)
     article_section = processArticleSections(processed_text)
-    
+    print("--- %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
 
 
     texttiler = tt.TextTilingTokenizer()
     summary = Summarizer(texttiler)
     sections, summarized_sections = summary.generate(article_section, 1)
-
-
-
+    #sections, summarized_sections = q.enqueue(summary.generate, article_section)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
 
     quotes = getQuotes(processed_text)
 
@@ -106,7 +107,7 @@ def api_home(request, *args, **kwargs):
     json_tweet = json.dumps(Tweet_)
     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
     
-    
+    print("--- %s seconds ---" % (time.time() - start_time))
     
     
     if serializer.is_valid():
