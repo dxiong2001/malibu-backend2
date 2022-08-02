@@ -34,7 +34,7 @@ def tweetsApi(request, *args, **kwargs):
 
 
 def api_home(request, *args, **kwargs):
-    start_time = time.time()
+    # start_time = time.time()
     # body = request.body
     
     body_data = {}
@@ -68,16 +68,16 @@ def api_home(request, *args, **kwargs):
     page_content = get_html(url)
     processed_text = getArticleTextSections(page_content)
     article_section = processArticleSections(processed_text)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    # start_time = time.time()
 
 
-    texttiler = tt.TextTilingTokenizer()
+    texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
     sections, summarized_sections = summary.generate(article_section, 1)
     #sections, summarized_sections = q.enqueue(summary.generate, article_section)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    start_time = time.time()
+    # print("--- %s seconds ---" % (time.time() - start_time))
+    # start_time = time.time()
 
     quotes = getQuotes(processed_text)
 
@@ -94,12 +94,16 @@ def api_home(request, *args, **kwargs):
         QuotesList.append(createQuote(a[0],a[1]))
 
     SectionList = quoteToSection(sections, summarized_sections, QuotesList)
-
+    SectionList = processFirstSection(SectionList)
     #print(generateEntitiesList(people))
     
     #print(url)
     #print(title, author,date,image)
     #print(attributed_quotes)
+
+
+
+
     Tweet_ = {'_id': "1232", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
     # data['headers'] = dict(request.headers)
     # data['content_type'] = request.content_type
@@ -107,7 +111,7 @@ def api_home(request, *args, **kwargs):
     json_tweet = json.dumps(Tweet_)
     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
     
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
     
     
     if serializer.is_valid():

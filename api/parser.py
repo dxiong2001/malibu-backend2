@@ -208,3 +208,13 @@ def quoteToSection(sections, summarized_sections, quotes):
     SectionList.append(Section)
     i+=1
   return SectionList
+
+def processFirstSection(SectionList):
+  section1 = SectionList[0]
+  sent_nlp = nlp(section1['text'])
+  named_entities=[]
+  for entities in sent_nlp.ents:
+    named_entities.append((entities.text, entities.label_))
+  if(len(named_entities)==0 and len(section1['quotes'])==0):
+    SectionList.pop(0)
+  return SectionList
