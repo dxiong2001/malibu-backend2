@@ -211,7 +211,7 @@ def quoteToSection(sections, summarized_sections, quotes):
 
 def processFirstSection(SectionList):
   section1 = SectionList[0]
-  sent_nlp = nlp(section1['text'])
+  sent_nlp = nlp(section1['text'][0])
   named_entities=[]
   for entities in sent_nlp.ents:
     named_entities.append((entities.text, entities.label_))
