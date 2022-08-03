@@ -5,7 +5,7 @@ from .extraction import Summarizer, textrank
 from django.views.decorators.csrf import csrf_exempt
 import urllib
 import nltk.tokenize.texttiling as tt
-import time
+from rest_framework.decorators import api_view
 
 from api.models import Tweet
 from api.serializers import TweetSerializer
@@ -32,39 +32,7 @@ def tweetsApi(request, *args, **kwargs):
     return JsonResponse("Invalid request", safe=False)
         
 
-
-def api_home(request, *args, **kwargs):
-    # start_time = time.time()
-    # body = request.body
-    
-    body_data = {}
-    # try:
-    #     body_data = json.loads(body) # string of JSON data -> python dict
-    # except:
-    #     pass
-
-    # print(body_data)
-    body_data['params'] = dict(request.GET)
-    article_url = body_data['params']['url'][0]
-    url = urllib.parse.unquote(article_url)
-    
-    try:
-        tweets = Tweet.objects.all()
-        tweets_serializer=TweetSerializer(tweets, many=True)
-        tweet_objects = tweets_serializer.data
-        
-        #print(tweet_objects)
-
-        for t in tweet_objects:
-            db_tweet_url = t['url']
-            if(db_tweet_url==article_url):
-                return JsonResponse(json.loads(t['tweet']), safe=False)
-        
-    except:
-        pass
-
-    
-    
+def getTweet(url, article_url):
     page_content = get_html(url)
     processed_text = getArticleTextSections(page_content)
     article_section = processArticleSections(processed_text)
@@ -110,7 +78,7 @@ def api_home(request, *args, **kwargs):
     
     json_tweet = json.dumps(Tweet_)
     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-    
+    db_store = {'url': article_url, 'tweet': json_tweet}
     # print("--- %s seconds ---" % (time.time() - start_time))
     
     
@@ -120,4 +88,43 @@ def api_home(request, *args, **kwargs):
     else:
         print("not valid or error")
     
+    return Tweet_
+
+
+
+@api_view(['GET', 'POST'])
+def api_home(request, *args, **kwargs):
+    # start_time = time.time()
+    # body = request.body
+    
+    body_data = {}
+    # try:
+    #     body_data = json.loads(body) # string of JSON data -> python dict
+    # except:
+    #     pass
+
+    # print(body_data)
+    body_data['params'] = dict(request.GET)
+    article_url = body_data['params']['url'][0]
+    url = urllib.parse.unquote(article_url)
+    
+    if request.method=="GET":
+        try:
+            tweets = Tweet.objects.all()
+            tweets_serializer=TweetSerializer(tweets, many=True)
+            tweet_objects = tweets_serializer.data
+            
+            #print(tweet_objects)
+
+            for t in tweet_objects:
+                db_tweet_url = t['url']
+                if(db_tweet_url==article_url):
+                    return JsonResponse(json.loads(t['tweet']), safe=False)
+            
+        except:
+            pass
+
+    Tweet_ = getTweet(url, article_url)
+    
     return JsonResponse(Tweet_,safe=False)
+    
