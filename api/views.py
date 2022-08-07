@@ -31,8 +31,25 @@ def tweetsApi(request, *args, **kwargs):
         return JsonResponse(array_tweets, safe=False)
     return JsonResponse("Invalid request", safe=False)
         
+def getTweet2(url, article_url):
 
-def getTweet(url, article_url):
+    texttiler = tt.TextTilingTokenizer(w=30, k=40)
+    summary = Summarizer(texttiler)
+
+    page_content = get_html(url)
+    body_content = getArticleBody(page_content)
+    article_sections, article_p, article_subtitles = getArticleBodySections(body_content)
+
+    if(len(article_sections)==1):
+        article_body_text = "\n\n".join(article_p)
+        article_sections = summary.texttile(article_body_text)
+    
+    article_people = get_names(article_sections)
+    attributed_quotes = get_quotes(article_sections, article_people)
+    
+
+
+def getTweet1(url, article_url):
     page_content = get_html(url)
     processed_text = getArticleTextSections(page_content)
     article_section = processArticleSections(processed_text)
@@ -124,7 +141,7 @@ def api_home(request, *args, **kwargs):
         except:
             pass
 
-    Tweet_ = getTweet(url, article_url)
+    Tweet_ = getTweet1(url, article_url)
     
     return JsonResponse(Tweet_,safe=False)
     

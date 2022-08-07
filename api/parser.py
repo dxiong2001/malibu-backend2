@@ -74,6 +74,76 @@ def getArticleBodySections(body_content):
               break
   return section_list, section_p_list, section_subtitles
 
+def match_quotes(combined_sentences, quotes_incomplete):
+  
+  quotes_complete = []
+  for q in quotes_incomplete:
+    for c in combined_sentences:
+      if(q in c and c not in quotes_complete):
+        quotes_complete.append(c)
+      
+  return quotes_complete
+
+def attribute_quote2(people, quotes):
+  Quotes = []
+  for q in quotes:
+    found = False
+    for p in people:
+      for name in p:
+        if name in q:
+          Quotes.append((p[0],q))
+          found = True
+          break
+        if found:
+          break
+      if found:
+        break
+  
+  return Quotes
+
+def get_names(section_list):
+  joined_sentences = ' '.join(section_list)
+  
+  nlp_processed_text = nlp(joined_sentences)
+
+  named_entities=[]
+  for entities in nlp_processed_text.ents:
+    named_entities.append((entities.text, entities.label_))
+    #print(entities.text, entities.label_)
+  
+  people = []
+  for n in named_entities:
+    if(n[1]=="PERSON" and " " in n[0] and not any(i.isdigit() for i in n[0])):
+      people.append(n[0])
+
+  people_extended = []
+  for p in range(len(people)):
+    temp = []
+    temp.append(people[p].strip())
+    
+    temp = temp + people[p].split()
+    people_extended.append(temp)
+  return people_extended
+
+def get_quotes(section_list, people_extended):
+  sentences1 = []
+  for s in section_list:
+    sentences1.append(sent_tokenize(s))
+
+  quotes1 = []
+  for s in sentences1:
+    quotes2 = [re.findall('"([^"]*)"', paragraph) for paragraph in s]
+    quotes3 = [q for q in quotes2 if q != []]
+    quotes1.append(sum(quotes3,[]))
+
+  completed_quotes = []
+  for q in range(len(quotes1)):
+    completed_quotes.append(match_quotes(sentences1[q], quotes1[q]))
+  attributed_quotes=[]
+  for c in completed_quotes:
+    
+    attributed_quotes.append(attribute_quote(people_extended, c))
+
 def processText(article_content):
   processed_text=[]
   for art in article_content:
@@ -110,15 +180,7 @@ def getCombinedText(processed_text):
   return combined_sentences
 
 
-def get_quotes(combined_sentences, quotes_incomplete):
-  
-  quotes_complete = []
-  for q in quotes_incomplete:
-    for c in combined_sentences:
-      if(q in c and c not in quotes_complete):
-        quotes_complete.append(c)
-      
-  return quotes_complete
+
 
 def getQuotes(processed_text):
   combined_sentences = getCombinedText(processed_text)
