@@ -25,6 +25,63 @@ def get_html(url):
   return BeautifulSoup(page.content, 'html.parser')
 
 
+# extracts article body and removes extraneous "strong" tags
+def getArticleBody(page_content):
+  body_content = page_content.find('div', class_='Article-bodyText')
+  remove_strong = body_content.find_all('strong')
+  for r in remove_strong:
+    r.extract()
+  return body_content
+
+# extracts sections based on html h2 tags
+def getArticleBodySections(body_content):
+  section_list = []
+  section_subtitles = []
+  section_p_list = []
+  first_tag = body_content.find()
+  h2_list = body_content.findAll('h2')
+
+  if len(h2_list)==0:
+    return section_list
+
+  h2_list.insert(0, first_tag)
+  tags_to_search = h2_list
+  
+  prior_tag = True
+  for section in tags_to_search:
+      next_tag = section
+      sections = []
+      while True:
+          if prior_tag:
+            prior_tag = False
+          else:
+            next_tag = next_tag.nextSibling
+          try:
+              tag_name = next_tag.name
+          except AttributeError:
+              tag_name = ""
+          
+          if tag_name != "h2" and tag_name != "":
+              if(tag_name =="p"):
+                process_text1 = next_tag.get_text().replace('“', '"').replace('”', '"').replace("‘", "'").replace("’", "'").replace('…', '...').replace('–', '-')
+                process_text2 = unicodedata.normalize('NFKD', process_text1)
+                sections += process_text2
+                section_p_list.append(process_text2)
+          else:
+              if next_tag is not None:
+                section_subtitles.append(next_tag.get_text())
+              section_list.append(sections)
+              break
+  return section_list, section_p_list, section_subtitles
+
+def processText(article_content):
+  processed_text=[]
+  for art in article_content:
+    p2 = art.replace('“', '"').replace('”', '"').replace("‘", "'").replace("’", "'").replace('…', '...').replace('–', '-')
+    processed_text.append(unicodedata.normalize('NFKD', p2))
+  
+  return processed_text
+
 def getArticleTextSections(page_content):
   body_text = page_content.find('div', class_='Article-bodyText')
   remove_strong = body_text.find_all('strong')
@@ -52,6 +109,16 @@ def getCombinedText(processed_text):
 
   return combined_sentences
 
+
+def get_quotes(combined_sentences, quotes_incomplete):
+  
+  quotes_complete = []
+  for q in quotes_incomplete:
+    for c in combined_sentences:
+      if(q in c and c not in quotes_complete):
+        quotes_complete.append(c)
+      
+  return quotes_complete
 
 def getQuotes(processed_text):
   combined_sentences = getCombinedText(processed_text)

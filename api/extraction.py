@@ -58,18 +58,28 @@ class Summarizer:
   def __init__(self, texttiler):
     self.texttiler = texttiler
 
-  def generate(self, text, top=1):
+  def texttile(self, text):
     tokenized = self.texttiler.tokenize(text)
+    return tokenized
+
+  def generate(self, tokenized, top=1, percentage=0.2):
     length_t = len(tokenized)
     l = []
     
     for t in range(length_t):
       
       section_text = []
-      loop = min(top,len(tokenized[t]))
+      
       ranked_text = textrank(tokenized[t])
+      loop = min(top,len(ranked_text))
+      num_char_section = len(tokenized[t])
+      num_char = 0
       for i in range(loop):
         section_text.append(ranked_text[i].replace("\n\n",""))
+        num_char = num_char + len(ranked_text[i])
+        if(num_char/num_char_section > percentage):
+          break
+
       l.append(section_text)
       #textrank(tokenized[t])
       #summ[t][0]=textrank(tokenized[t])[0]
