@@ -65,7 +65,7 @@ def api_home(request, *args, **kwargs):
         except:
             pass
 
-    Tweet_ = getTweet1(url, article_url)
+    Tweet_ = getTweet2(url, article_url)
     
     return JsonResponse(Tweet_,safe=False)
     
