@@ -7,7 +7,7 @@ import nltk.tokenize.texttiling as tt
 
 from api.serializers import TweetSerializer
 
-def processSection(section_list, quotes, summary):
+def processSection(section_list,quotes, summary):
     SectionList = []
 
     sentences1 = []
@@ -21,14 +21,20 @@ def processSection(section_list, quotes, summary):
             Quotes.append(createQuote(q[0],q[1]))
         Section['quotes'] = Quotes
 
-        text_rank = summary.generate()
+        # text_to_rank = "\n\n".join(section_list[s])
+        print(section_list[s])
+        text_rank = summary.generate([section_list[s]], top = 3)
+        print(text_rank)
         text = text_rank[0]
-        Section['text'] = text
-
-        text_rank.pop(0)
+        Section['text'] = text[0]
         
+
+        text.pop(0)
+        Section['parts'] = []
+        print(text)
         indices = {c: i for i, c in enumerate(sentences1[0])}
-        Section['parts'] = sorted(text_rank, key=indices.get)
+        
+        Section['parts'] = sorted(text, key=indices.get)
         SectionList.append(Section)
     return SectionList
 
@@ -40,8 +46,8 @@ def getTweet2(url, article_url):
 
     page_content = get_html(url)
     body_content = getArticleBody(page_content)
-    article_sections, article_p, article_subtitles = getArticleBodySections(body_content)
-
+    article_sections, article_p, article_p2, article_subtitles = getArticleBodySections(body_content)
+    
     if(len(article_sections)==1):
         article_body_text = "\n\n".join(article_p)
         article_sections = summary.texttile(article_body_text)
@@ -53,6 +59,7 @@ def getTweet2(url, article_url):
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
+    print(len(article_sections))
     SectionList = processSection(article_sections, attributed_quotes, summary)
 
     Tweet_ = {'_id': "1232", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}

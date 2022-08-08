@@ -36,13 +36,11 @@ def getArticleBody(page_content):
 # extracts sections based on html h2 tags
 def getArticleBodySections(body_content):
   section_list = []
-  section_subtitles = []
+  section_subtitles = ["Introduction"]
   section_p_list = []
+  section_p_list2 = []
   first_tag = body_content.find()
   h2_list = body_content.findAll('h2')
-
-  if len(h2_list)==0:
-    return section_list
 
   h2_list.insert(0, first_tag)
   tags_to_search = h2_list
@@ -50,7 +48,8 @@ def getArticleBodySections(body_content):
   prior_tag = True
   for section in tags_to_search:
       next_tag = section
-      sections = []
+      sections = ""
+      sections2 = []
       while True:
           if prior_tag:
             prior_tag = False
@@ -66,13 +65,15 @@ def getArticleBodySections(body_content):
                 process_text1 = next_tag.get_text().replace('“', '"').replace('”', '"').replace("‘", "'").replace("’", "'").replace('…', '...').replace('–', '-')
                 process_text2 = unicodedata.normalize('NFKD', process_text1)
                 sections += process_text2
+                sections2.append(process_text2)
                 section_p_list.append(process_text2)
           else:
               if next_tag is not None:
                 section_subtitles.append(next_tag.get_text())
               section_list.append(sections)
+              section_p_list2.append(sections2)
               break
-  return section_list, section_p_list, section_subtitles
+  return section_list, section_p_list, section_p_list2, section_subtitles
 
 def match_quotes(combined_sentences, quotes_incomplete):
   
@@ -143,6 +144,7 @@ def get_quotes(section_list, people_extended):
   for c in completed_quotes:
     
     attributed_quotes.append(attribute_quote(people_extended, c))
+  return attributed_quotes
 
 def processText(article_content):
   processed_text=[]

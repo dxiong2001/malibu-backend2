@@ -85,7 +85,7 @@ class Summarizer:
       #summ[t][0]=textrank(tokenized[t])[0]
       #summ[t][1]=textrank(tokenized[t])#[1]
       
-    return tokenized, l
+    return l
 
   def process(self, raw_text):
     processed_text = ""
