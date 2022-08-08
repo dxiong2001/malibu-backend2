@@ -13,8 +13,9 @@ def processSection(section_list,quotes, summary):
     sentences1 = []
     for s in section_list:
         sentences1.append(sent_tokenize(s))
-
+    print(sentences1)
     for s in range(len(section_list)):
+        print("test\n")
         Section = {}
         Quotes = []
         for q in quotes[s]:
@@ -22,20 +23,23 @@ def processSection(section_list,quotes, summary):
         Section['quotes'] = Quotes
 
         # text_to_rank = "\n\n".join(section_list[s])
-        print(section_list[s])
+        print("Section:\n\n")
         text_rank = summary.generate([section_list[s]], top = 3)
-        print(text_rank)
+        
         text = text_rank[0]
         Section['text'] = text[0]
         
 
         text.pop(0)
-        Section['parts'] = []
         print(text)
-        indices = {c: i for i, c in enumerate(sentences1[0])}
+        Section['parts'] = []
+        print(type(text[0]))
+        indices = {c: i for i, c in enumerate(sentences1[s])}
+        
         
         Section['parts'] = sorted(text, key=indices.get)
         SectionList.append(Section)
+        print("endtest\n\n\n")
     return SectionList
 
     
