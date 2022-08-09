@@ -65,8 +65,26 @@ def getTweet2(url, article_url):
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
+
     
+
     SectionList = processSection(article_sections, attributed_quotes, summary)
+
+    print("open and write to file")
+    f = open("extractive_summarization.txt", "a")
+    f.write(title+"\n")
+    f.write(author)
+    for a in range(len(article_sections)):
+        section_num = a+1
+        f.write(("\n\n\n")+"Section "+ str(section_num)+":\n\n")
+        f.write("Extractive Summarization:\n")
+        f.write(SectionList[a]['text'])
+        for s in SectionList[a]['parts']:
+            f.write(s+"\n")
+        f.write("\nArticle Section:\n")
+        f.write(article_sections[a])
+    f.write("\n\n\n\n")
+    f.close()
 
     Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
 
