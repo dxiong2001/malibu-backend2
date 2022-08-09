@@ -5,17 +5,18 @@ from .extraction import Summarizer, textrank
 from nltk.tokenize import sent_tokenize
 import nltk.tokenize.texttiling as tt
 
+from api.models import Tweet
 from api.serializers import TweetSerializer
 
 def processSection(section_list,quotes, summary):
     SectionList = []
-    print(section_list)
+    
     sentences1 = []
     for s in section_list:
         sentences1.append(sent_tokenize(s))
     
     for s in range(len(section_list)):
-        print(section_list[s])
+        
         Section = {}
         Quotes = []
         for q in quotes[s]:
@@ -29,10 +30,10 @@ def processSection(section_list,quotes, summary):
         text = text_rank[0]
         
         Section['text'] = text[0]
-        print(text)
+        
 
         text.pop(0)
-        print(text)
+        
         Section['parts'] = []
         
         indices = {c: i for i, c in enumerate(sentences1[s])}
@@ -40,7 +41,7 @@ def processSection(section_list,quotes, summary):
         
         Section['parts'] = sorted(text, key=indices.get)
         SectionList.append(Section)
-        print("endtest\n\n\n")
+        
     return SectionList
 
     
@@ -64,22 +65,34 @@ def getTweet2(url, article_url):
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
-    print(len(article_sections))
+    
     SectionList = processSection(article_sections, attributed_quotes, summary)
 
-    Tweet_ = {'_id': "1234", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
+    Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
 
     json_tweet = json.dumps(Tweet_)
-    serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-    db_store = {'url': article_url, 'tweet': json_tweet}
+    
+    
     # print("--- %s seconds ---" % (time.time() - start_time))
     
     
-    if serializer.is_valid():
-        serializer.save()
-        print("valid")
+    objects = Tweet.objects.filter(url = article_url)
+    
+    if(len(objects)>0):
+        # print("filtered objects")
+        # for obj in objects:
+        #     obj.tweet = json_tweet
+        #     obj.save()
+        #     break
+        Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
     else:
-        print("not valid or error")
+        serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
+        if serializer.is_valid():
+            serializer.save()
+            print("valid")
+        else:
+            print("not valid or error")
+    
     
     return Tweet_
 
@@ -128,16 +141,25 @@ def getTweet1(url, article_url):
     # data['content_type'] = request.content_type
     
     json_tweet = json.dumps(Tweet_)
-    serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-    db_store = {'url': article_url, 'tweet': json_tweet}
+    
+    
     # print("--- %s seconds ---" % (time.time() - start_time))
     
-    
-    if serializer.is_valid():
-        serializer.save()
-        print("valid")
+    objects = Tweet.objects.filter(url = article_url)
+    print(Tweet.objects.all())
+    if(len(objects)>0):
+        print("filtered objects")
+        for obj in objects:
+            obj.tweet = json_tweet
+            obj.save()
     else:
-        print("not valid or error")
+        serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
+        if serializer.is_valid():
+            serializer.save()
+            print("valid")
+        else:
+            print("not valid or error")
+    
     
     return Tweet_
 
