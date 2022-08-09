@@ -49,23 +49,23 @@ def api_home(request, *args, **kwargs):
     article_url = body_data['params']['url'][0]
     url = urllib.parse.unquote(article_url)
     
-    if request.method=="GET":
-        try:
-            tweets = Tweet.objects.all()
-            tweets_serializer=TweetSerializer(tweets, many=True)
-            tweet_objects = tweets_serializer.data
+    # if request.method=="GET":
+    #     try:
+    #         tweets = Tweet.objects.all()
+    #         tweets_serializer=TweetSerializer(tweets, many=True)
+    #         tweet_objects = tweets_serializer.data
             
-            #print(tweet_objects)
+    #         #print(tweet_objects)
 
-            for t in tweet_objects:
-                db_tweet_url = t['url']
-                if(db_tweet_url==article_url):
-                    return JsonResponse(json.loads(t['tweet']), safe=False)
+    #         for t in tweet_objects:
+    #             db_tweet_url = t['url']
+    #             if(db_tweet_url==article_url):
+    #                 return JsonResponse(json.loads(t['tweet']), safe=False)
             
-        except:
-            pass
+    #     except:
+    #         pass
 
     Tweet_ = getTweet2(url, article_url)
     
-    return JsonResponse(Tweet_,safe=False)
+    return JsonResponse(Tweet_, safe=False)
     

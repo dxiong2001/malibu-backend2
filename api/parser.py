@@ -64,7 +64,7 @@ def getArticleBodySections(body_content):
               if(tag_name =="p"):
                 process_text1 = next_tag.get_text().replace('“', '"').replace('”', '"').replace("‘", "'").replace("’", "'").replace('…', '...').replace('–', '-')
                 process_text2 = unicodedata.normalize('NFKD', process_text1)
-                sections += process_text2
+                sections += (process_text2+" ")
                 sections2.append(process_text2)
                 section_p_list.append(process_text2)
           else:

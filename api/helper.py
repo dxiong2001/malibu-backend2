@@ -9,13 +9,13 @@ from api.serializers import TweetSerializer
 
 def processSection(section_list,quotes, summary):
     SectionList = []
-
+    print(section_list)
     sentences1 = []
     for s in section_list:
         sentences1.append(sent_tokenize(s))
-    print(sentences1)
+    
     for s in range(len(section_list)):
-        print("test\n")
+        print(section_list[s])
         Section = {}
         Quotes = []
         for q in quotes[s]:
@@ -23,17 +23,18 @@ def processSection(section_list,quotes, summary):
         Section['quotes'] = Quotes
 
         # text_to_rank = "\n\n".join(section_list[s])
-        print("Section:\n\n")
+        
         text_rank = summary.generate([section_list[s]], top = 3)
         
         text = text_rank[0]
-        Section['text'] = text[0]
         
+        Section['text'] = text[0]
+        print(text)
 
         text.pop(0)
         print(text)
         Section['parts'] = []
-        print(type(text[0]))
+        
         indices = {c: i for i, c in enumerate(sentences1[s])}
         
         
@@ -66,7 +67,7 @@ def getTweet2(url, article_url):
     print(len(article_sections))
     SectionList = processSection(article_sections, attributed_quotes, summary)
 
-    Tweet_ = {'_id': "1232", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
+    Tweet_ = {'_id': "1234", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
 
     json_tweet = json.dumps(Tweet_)
     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
