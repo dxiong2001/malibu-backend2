@@ -71,19 +71,22 @@ def getTweet2(url, article_url):
     SectionList = processSection(article_sections, attributed_quotes, summary)
 
     print("open and write to file")
-    f = open("extractive_summarization.txt", "a")
-    f.write(title+"\n")
-    f.write(author)
-    for a in range(len(article_sections)):
-        section_num = a+1
-        f.write(("\n\n\n")+"Section "+ str(section_num)+":\n\n")
-        f.write("Extractive Summarization:\n")
-        f.write(SectionList[a]['text'])
-        for s in SectionList[a]['parts']:
-            f.write(s+"\n")
-        f.write("\nArticle Section:\n")
-        f.write(article_sections[a])
-    f.write("\n\n\n\n")
+    f = open("testing.txt", "w")
+    for a in article_sections:
+        f.write(a+"\n")
+    # f = open("extractive_summarization.txt", "a")
+    # f.write(title+"\n")
+    # f.write(author)
+    # for a in range(len(article_sections)):
+    #     section_num = a+1
+    #     f.write(("\n\n\n")+"Section "+ str(section_num)+":\n\n")
+    #     f.write("Extractive Summarization:\n")
+    #     f.write(SectionList[a]['text'])
+    #     for s in SectionList[a]['parts']:
+    #         f.write(s+"\n")
+    #     f.write("\nArticle Section:\n")
+    #     f.write(article_sections[a])
+    # f.write("\n\n\n\n")
     f.close()
 
     Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
@@ -94,22 +97,18 @@ def getTweet2(url, article_url):
     # print("--- %s seconds ---" % (time.time() - start_time))
     
     
-    objects = Tweet.objects.filter(url = article_url)
+    # objects = Tweet.objects.filter(url = article_url)
     
-    if(len(objects)>0):
-        # print("filtered objects")
-        # for obj in objects:
-        #     obj.tweet = json_tweet
-        #     obj.save()
-        #     break
-        Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
-    else:
-        serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-        if serializer.is_valid():
-            serializer.save()
-            print("valid")
-        else:
-            print("not valid or error")
+    # if(len(objects)>0):
+        
+    #     Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
+    # else:
+    #     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         print("valid")
+    #     else:
+    #         print("not valid or error")
     
     
     return Tweet_
