@@ -29,8 +29,13 @@ def get_html(url):
 def getArticleBody(page_content):
   body_content = page_content.find('div', class_='Article-bodyText')
   remove_strong = body_content.find_all('strong')
+  parent=[]
   for r in remove_strong:
-    r.extract()
+    parent.append(r.find_parent("p"))
+  # for r in remove_strong:
+  #   r.extract()
+  for p in parent:
+    p.extract()
   return body_content
 
 # extracts sections based on html h2 tags
