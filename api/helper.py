@@ -13,8 +13,9 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
     
     sentences1 = []
     for s in section_list:
-        sentences1.append(sent_tokenize(s))
+        sentences1.append(sent_tokenize(s.replace("\n","")))
     
+
     for s in range(len(section_list)):
         
 
@@ -22,23 +23,26 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
         
         Points = []
 
-        print(quotes[s])
+        
         text_rank = summary.generate([section_list[s]], top = 3)
         text = text_rank[0]
 
         indices = {c: i for i, c in enumerate(sentences1[s])}
+        
         sorted_text = sorted(text, key=indices.get)
-
+        
         if(len(section_titles)>1 and section_titles[s] != "Introduction" ):
             sorted_text.insert(0, section_titles[s])
         
+        
+        print(quotes[s])
         for sort in sorted_text:
             isQuote = False
-
+            print(sort)
             for q in quotes[s]:
-                print(q)
-                print(sort)
-                if sort in q[1]:
+                
+                
+                if sort in q[1].replace("\n",""):
                     Points.append(createQuote(q[0], sort))
                     isQuote = True
                     break
