@@ -8,7 +8,7 @@ import nltk.tokenize.texttiling as tt
 from api.models import Tweet
 from api.serializers import TweetSerializer
 
-def processSection(section_list,quotes, summary):
+def processSection(section_list, section_titles, quotes, summary, author_entity):
     SectionList = []
     
     sentences1 = []
@@ -17,30 +17,36 @@ def processSection(section_list,quotes, summary):
     
     for s in range(len(section_list)):
         
-        Section = {}
-        Quotes = []
-        for q in quotes[s]:
-            Quotes.append(createQuote(q[0],q[1]))
-        Section['quotes'] = Quotes
 
         # text_to_rank = "\n\n".join(section_list[s])
         
-        text_rank = summary.generate([section_list[s]], top = 3)
-        
-        text = text_rank[0]
-        
-        Section['text'] = text[0]
-        
+        Points = []
 
-        text.pop(0)
-        
-        Section['parts'] = []
-        
+        print(quotes[s])
+        text_rank = summary.generate([section_list[s]], top = 3)
+        text = text_rank[0]
+
         indices = {c: i for i, c in enumerate(sentences1[s])}
+        sorted_text = sorted(text, key=indices.get)
+
+        if(len(section_titles)>1 and section_titles[s] != "Introduction" ):
+            sorted_text.insert(0, section_titles[s])
+        
+        for sort in sorted_text:
+            isQuote = False
+
+            for q in quotes[s]:
+                print(q)
+                print(sort)
+                if sort in q[1]:
+                    Points.append(createQuote(q[0], sort))
+                    isQuote = True
+                    break
+            if not isQuote:
+                Points.append({'author': author_entity, 'text': sort})
         
         
-        Section['parts'] = sorted(text, key=indices.get)
-        SectionList.append(Section)
+        SectionList.append({'points': Points})
         
     return SectionList
 
@@ -60,13 +66,13 @@ def getTweet2(url, article_url):
     
     article_people = get_names(article_sections)
     attributed_quotes = get_quotes(article_sections, article_people)
-
+    print(attributed_quotes)
     title, subtitle, author, date, image = getArticleInfo(page_content)
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
     
-    SectionList = processSection(article_sections, attributed_quotes, summary)
+    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity)
 
     Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
 

@@ -148,7 +148,7 @@ def get_quotes(section_list, people_extended):
   attributed_quotes=[]
   for c in completed_quotes:
     
-    attributed_quotes.append(attribute_quote(people_extended, c))
+    attributed_quotes.append(attribute_quote2(people_extended, c))
   return attributed_quotes
 
 def processText(article_content):
@@ -292,7 +292,7 @@ def getTwitterInfo(name):
 
     return is_verified, screen_name, user_name, profile_img
   except:
-    return False, "NA", "NA", "NA"
+    return False, name, name, "https://about.twitter.com/content/dam/about-twitter/en/brand-toolkit/brand-download-img-1.jpg.twimg.1920.jpg"
 
 def getImage(name):
   #Important note!: daily limit is 100 requests
