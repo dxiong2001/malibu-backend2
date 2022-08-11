@@ -25,13 +25,10 @@ def processSection(section_list,quotes, summary):
 
         # text_to_rank = "\n\n".join(section_list[s])
         
-        text_rank = summary.generate([section_list[s]], top = 3)
+        text_rank = summary.generate([section_list[s]], top = 3, percentage=0.2)
         
         text = text_rank[0]
-        
         Section['text'] = text[0]
-        
-
         text.pop(0)
         
         Section['parts'] = []
@@ -71,22 +68,22 @@ def getTweet2(url, article_url):
     SectionList = processSection(article_sections, attributed_quotes, summary)
 
     print("open and write to file")
-    f = open("testing.txt", "w")
-    for a in article_sections:
-        f.write(a+"\n")
-    # f = open("extractive_summarization.txt", "a")
-    # f.write(title+"\n")
-    # f.write(author)
-    # for a in range(len(article_sections)):
-    #     section_num = a+1
-    #     f.write(("\n\n\n")+"Section "+ str(section_num)+":\n\n")
-    #     f.write("Extractive Summarization:\n")
-    #     f.write(SectionList[a]['text'])
-    #     for s in SectionList[a]['parts']:
-    #         f.write(s+"\n")
-    #     f.write("\nArticle Section:\n")
-    #     f.write(article_sections[a])
-    # f.write("\n\n\n\n")
+    # f = open("testing.txt", "w")
+    # for a in article_sections:
+    #     f.write(a+"\n")
+    f = open("extractive_summarization3-1.txt", "a")
+    f.write(title+"\n")
+    f.write(author)
+    for a in range(len(article_sections)):
+        section_num = a+1
+        f.write(("\n\n\n")+"Section "+ str(section_num)+":\n\n")
+        f.write("Extractive Summarization:\n")
+        f.write(SectionList[a]['text']+" ")
+        for s in SectionList[a]['parts']:
+            f.write(s+" ")
+        f.write("\n\nArticle Section:\n")
+        f.write(article_sections[a])
+    f.write("\n\n\n\n")
     f.close()
 
     Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
@@ -121,7 +118,7 @@ def getTweet1(url, article_url):
     # start_time = time.time()
 
 
-    texttiler = tt.TextTilingTokenizer(w=30, k=40)
+    texttiler = tt.TextTilingTokenizer(w=40, k=10)
     summary = Summarizer(texttiler)
     sections, summarized_sections = summary.generate(article_section, 1)
     #sections, summarized_sections = q.enqueue(summary.generate, article_section)

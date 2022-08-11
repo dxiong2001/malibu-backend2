@@ -1,0 +1,59 @@
+Omicron may not be more dangerous than other variants, early hospital report suggests
+Hannah Seo
+
+
+Section 1:
+
+Extractive Summarization:
+Preliminary clinical data from South Africa suggest that the COVID-19 Omicron variant may be less dangerous than initially feared. 
+
+Article Section:
+Preliminary clinical data from South Africa suggest that the COVID-19 Omicron variant may be less dangerous than initially feared. 
+
+The South African Medical Research Council posted a report on Saturday outlining early Omicron cases from several hospitals. They found that patients infected with the Omicron strain tended to have less severe disease—most of the hospitalized patients did not need supplemental oxygen, a few developed COVID pneumonia, and fewer still required intensive care.
+
+
+Section 2:
+
+Extractive Summarization:
+ "The signals are a bit encouraging" but Omicron's risk profile is still incomplete, Anthony Fauci, head of the National Institute of Allergy and Infectious Diseases, told CNN on Sunday. More clinical data from around the world will need to be assessed for epidemiologists to get a true sense of where Omicron stands in relation to other variants. 
+
+Article Section:
+ 
+
+"The signals are a bit encouraging" but Omicron's risk profile is still incomplete, Anthony Fauci, head of the National Institute of Allergy and Infectious Diseases, told CNN on Sunday. More clinical data from around the world will need to be assessed for epidemiologists to get a true sense of where Omicron stands in relation to other variants. "Clearly, in South Africa, Omicron has a transmission advantage," Fauci added, "although it's too early to make any definitive statements about it, thus far it does not look like there's a great degree of severity to it."
+
+The South African report is based on limited data, however. It included just 166 patients, most of whom were admitted to hospitals for reasons unrelated to COVID-19—their infections were only found because those hospitals are testing all incoming patients for the coronavirus. Many did not have respiratory symptoms and stayed at the hospital for a relatively short time. Vaccination status was not reported for all of the patients.
+
+"We're just not seeing the number of patients that have been seen in previous surges who are seriously ill, even this soon into the surge," Michael Osterholm, director of the University of Minnesota's Center for Infectious Diseases Research and Policy, told STAT, adding that he is "impressed by the relative lack of severe illness" with Omicron so far. 
+
+Data from the South African report show that the patients included tended to skew younger, which the report's authors write could be a vaccination effect, "as 57 percent of people over the age of 50 have been vaccinated in the province compared to 34 percent in the 18-to-49-year group."
+
+
+Section 3:
+
+Extractive Summarization:
+Although Omicron appears to produce milder disease, scientists will need to study the effects of Omicron in different demographics, Marion Koopmans, head of virology at Erasmus Medical Center in Rotterdam, the Netherlands, told STAT. 
+
+Article Section:
+
+
+Although Omicron appears to produce milder disease, scientists will need to study the effects of Omicron in different demographics, Marion Koopmans, head of virology at Erasmus Medical Center in Rotterdam, the Netherlands, told STAT. "Only once we have seen this spread across age groups, we will be able to tell," she said.
+
+Omicron has been detected in at least 16 states and at least 45 nations worldwide. Nevertheless, the Delta variant still seems to be the primary cause for concern, making up the majority of severe cases in the US—despite Omicron's high transmissibility.
+
+
+Section 4:
+
+Extractive Summarization:
+Omicron may have picked up genetic materials from the virus that causes the common cold in humans, resulting in the variant's high contagiousness. 
+
+Article Section:
+
+
+Omicron may have picked up genetic materials from the virus that causes the common cold in humans, resulting in the variant's high contagiousness. A preprint, non-peer-reviewed study from a Massachusetts-based firm says that Omicron's genetic code contains a sequence shared with the cold virus—a sequence that no other coronavirus variant seems to contain.
+
+"By virtue of Omicron adopting this insertion ... it is essentially taking a leaf out of the seasonal coronaviruses' page, which [explains] ... how it lives and transmits more efficiently with human beings," Venky Soundararajan, a biological engineer at Nference who co-wrote the study, told The Washington Post.
+
+
+
