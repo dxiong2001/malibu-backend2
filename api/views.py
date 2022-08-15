@@ -69,7 +69,7 @@ def api_home(request, *args, **kwargs):
     except:
         pass
 
-    Tweet_ = getTweet2(url, article_url)
+    Tweet_ = getTweet2(url, article_url, 50)
     
     return JsonResponse(Tweet_, safe=False)
 
@@ -86,7 +86,7 @@ def tweetUpdate(request, *args, **kwargs):
     url = urllib.parse.unquote(article_url)
     
 
-    Tweet_ = getTweet2(url, article_url)
+    Tweet_ = getTweet2(url, article_url, 200)
     
     return JsonResponse(Tweet_, safe=False)
     

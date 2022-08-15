@@ -18,7 +18,7 @@ except:
   nltk.download('stopwords')
 
 
-def textrank(text):
+def textrank(text, iterations):
 
   #Preproces text
   sentences=sent_tokenize(text)
@@ -27,7 +27,7 @@ def textrank(text):
   stop_words = stopwords.words('english')
   sentence_tokens=[[words for words in sentence.split(' ') if words not in stop_words] for sentence in sentences_clean]
 
-  w2v=Word2Vec(sentence_tokens,vector_size=128,min_count=1,epochs=100)
+  w2v=Word2Vec(sentence_tokens,vector_size=128,min_count=1,epochs=iterations)
   sentence_embeddings=[[w2v.wv[word][0] for word in words] for words in sentence_tokens]
   max_len=max([len(tokens) for tokens in sentence_tokens])
   sentence_embeddings=[np.pad(embedding,(0,max_len-len(embedding)),'constant') for embedding in sentence_embeddings]
@@ -62,7 +62,7 @@ class Summarizer:
     tokenized = self.texttiler.tokenize(text)
     return tokenized
 
-  def generate(self, tokenized, top=1, percentage=0.2):
+  def generate(self, tokenized, iterations, top=1, percentage=0.2):
     length_t = len(tokenized)
     l = []
     
@@ -70,7 +70,7 @@ class Summarizer:
       
       section_text = []
       
-      ranked_text = textrank(tokenized[t])
+      ranked_text = textrank(tokenized[t], iterations)
       loop = min(top,len(ranked_text))
       num_char_section = len(tokenized[t])
       num_char = 0

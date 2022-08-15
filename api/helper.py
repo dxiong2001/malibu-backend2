@@ -8,7 +8,7 @@ import nltk.tokenize.texttiling as tt
 from api.models import Tweet
 from api.serializers import TweetSerializer
 
-def processSection(section_list, section_titles, quotes, summary, author_entity):
+def processSection(section_list, section_titles, quotes, summary, author_entity, iterations):
     SectionList = []
     
     sentences1 = []
@@ -24,7 +24,7 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
         Points = []
 
         
-        text_rank = summary.generate([section_list[s].strip()], top = 3)
+        text_rank = summary.generate([section_list[s].strip()], top = 3, iterations=iterations)
         text = text_rank[0]
         sorted_text = text
 
@@ -58,7 +58,7 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
     return SectionList
 
     
-def getTweet2(url, article_url):
+def getTweet2(url, article_url, iterations):
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
@@ -79,7 +79,7 @@ def getTweet2(url, article_url):
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
     
-    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity)
+    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
 
     Tweet_ = {'_id': "1235", 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
 
