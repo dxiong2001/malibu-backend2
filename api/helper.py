@@ -13,7 +13,7 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
     
     sentences1 = []
     for s in section_list:
-        sentences1.append(sent_tokenize(s.replace("\n","")))
+        sentences1.append(sent_tokenize(s.replace("\n","").strip()))
     
 
     for s in range(len(section_list)):
@@ -24,21 +24,24 @@ def processSection(section_list, section_titles, quotes, summary, author_entity)
         Points = []
 
         
-        text_rank = summary.generate([section_list[s]], top = 3)
+        text_rank = summary.generate([section_list[s].strip()], top = 3)
         text = text_rank[0]
+        sorted_text = text
 
-        indices = {c: i for i, c in enumerate(sentences1[s])}
-        
-        sorted_text = sorted(text, key=indices.get)
+        try:
+            indices = {c: i for i, c in enumerate(sentences1[s])}
+            sorted_text = sorted(text, key=indices.get)
+        except:
+            pass
         
         if(len(section_titles)>1 and section_titles[s] != "Introduction" ):
             sorted_text.insert(0, section_titles[s])
         
         
-        print(quotes[s])
+        
         for sort in sorted_text:
             isQuote = False
-            print(sort)
+            
             for q in quotes[s]:
                 
                 
@@ -70,7 +73,7 @@ def getTweet2(url, article_url):
     
     article_people = get_names(article_sections)
     attributed_quotes = get_quotes(article_sections, article_people)
-    print(attributed_quotes)
+    #print(attributed_quotes)
     title, subtitle, author, date, image = getArticleInfo(page_content)
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
