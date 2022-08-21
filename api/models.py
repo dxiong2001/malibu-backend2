@@ -11,24 +11,23 @@ class Tweet(models.Model):
 
 # class Entity(models.Model):
 #     name = models.CharField(max_length=200)
-#     userName = models.CharField(max_length=200)
-#     screenName = models.CharField(max_length = 200)
-#     profileImg = models.TextField()
+#     user_name = models.CharField(max_length=200)
+#     screen_name = models.CharField(max_length = 200)
+#     profile_image = models.TextField()
 
-# class Quote(models.Model):
+# class Point(models.Model):
 #     author = models.ForeignKey(Entity, on_delete=models.CASCADE)
 #     text = models.TextField()
 
 # class Section(models.Model):
-#     text = models.TextField()
-#     quotes = models.ManyToManyField(Quote)
+#     points = models.ManyToManyField(Point)
 
 # class Tweet(models.Model):
-#     _id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     title = models.TextField()
-#     subtitle = models.TextField()
-#     time = models.TextField()
+#     url = models.CharField(max_length = 200)
+#     title = models.CharField(max_length = 200)
+#     subtitle = models.CharField(max_length = 200)
+#     time = models.CharField(max_length = 200)
 #     publisher = models.ForeignKey(Entity, on_delete=models.CASCADE,related_name='publisher')
 #     author = models.ForeignKey(Entity, on_delete=models.CASCADE,related_name='author')
-#     image = models.TextField()
+#     image = models.CharField(max_length = 200)
 #     sections = models.ManyToManyField(Section)

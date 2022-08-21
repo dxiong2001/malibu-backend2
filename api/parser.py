@@ -311,7 +311,7 @@ def getImage(name):
 
 
 def createEntity(name, userName, screenName, profileImg):
-  return {'name': name, 'userName': userName, 'screenName': screenName, 'profileImg': profileImg}
+  return {'name': name, 'user_name': userName, 'screen_name': screenName, 'profile_image': profileImg}
 
 def createQuote(name, quote):
   is_verified, screen_name, user_name, profile_img = getTwitterInfo(name)

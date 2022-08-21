@@ -18,17 +18,21 @@ q = Queue(connection=conn)
 def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
         tweets = Tweet.objects.all()
+        
+        
+        
         tweets_serializer=TweetSerializer(tweets, many=True)
         tweet_objects = tweets_serializer.data
-        
+        #print(tweets_serializer)
         array_tweets=[]
         i = 0
         for t in tweet_objects:
             
-            try:
-                array_tweets.append(json.loads(t['tweet']))
-            except:
-                array_tweets.append(t['tweet'])
+            array_tweets.append(json.loads(t['tweet']))
+            # try:
+            #     array_tweets.append(json.loads(t['tweet']))
+            # except:
+            #     array_tweets.append(t['tweet'])
             if i==4:
                 break
             i+=1
@@ -63,13 +67,14 @@ def api_home(request, *args, **kwargs):
 
         for t in tweet_objects:
             db_tweet_url = t['url']
+            
             if(db_tweet_url==article_url):
                 return JsonResponse(json.loads(t['tweet']), safe=False)
         
     except:
         pass
 
-    Tweet_ = getTweet2(url, article_url, 50)
+    Tweet_ = getTweet(url, article_url, 50)
     
     return JsonResponse(Tweet_, safe=False)
 
@@ -86,7 +91,7 @@ def tweetUpdate(request, *args, **kwargs):
     url = urllib.parse.unquote(article_url)
     
 
-    Tweet_ = getTweet2(url, article_url, 200)
+    Tweet_ = getTweet(url, article_url, 200)
     
     return JsonResponse(Tweet_, safe=False)
     
