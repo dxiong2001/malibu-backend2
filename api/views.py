@@ -18,7 +18,7 @@ def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
         my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
         dbname = my_client['Tweets']
-        
+
         # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
         collection_name = dbname["api_tweet"]
         tweets = collection_name.find({})
@@ -39,8 +39,7 @@ def tweetsApi(request, *args, **kwargs):
 
 @api_view(['GET', 'POST'])
 def api_home(request, *args, **kwargs):
-    # start_time = time.time()
-    # body = request.body
+    
     
     body_data = {}
     # try:
