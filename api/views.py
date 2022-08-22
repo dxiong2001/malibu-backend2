@@ -78,7 +78,7 @@ def tweetUpdate(request, *args, **kwargs):
     url = urllib.parse.unquote(article_url)
     
 
-    Tweet_ = getTweet(url, article_url, 200)
+    Tweet_ = updateTweet(url, article_url, 200)
     
     return JsonResponse(Tweet_, safe=False)
     

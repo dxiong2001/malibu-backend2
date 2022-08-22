@@ -92,9 +92,12 @@ def updateTweet(url, article_url, iterations):
     print(current_date)
     
     tweets = Tweet.objects.get(url = url)
-        
+    print("id: ",tweets.id)
     tweets.updated_date = current_date
     tweets.save()
+        
+    
+    
     
     
     return Tweet_
