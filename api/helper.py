@@ -13,6 +13,7 @@ import pymongo
 from django.conf import settings
 from decouple import config
 from bson.objectid import ObjectId
+import pytz
 
 def processSection(section_list, section_titles, quotes, summary, author_entity, iterations):
     SectionList = []
@@ -86,8 +87,10 @@ def updateTweet(url, article_url, iterations):
     publisherEntity = createSingularEntity(publisher)
     
     SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
+    
 
-    date_now = datetime.now()
+    tz = pytz.timezone('America/Los_Angeles')
+    date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
     Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
@@ -129,7 +132,8 @@ def getTweet(url, article_url, iterations):
     
     SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
 
-    date_now = datetime.now()
+    tz = pytz.timezone('America/Los_Angeles')
+    date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
     Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
