@@ -1,5 +1,5 @@
-from djongo import models
-import uuid
+from django.db import models
+
 
 # Create your models here.
 
@@ -15,41 +15,26 @@ class Entity(models.Model):
     screen_name = models.CharField(max_length = 200)
     profile_image = models.TextField(default="")
 
-    class Meta:
-        abstract = True
 
 
 class Point(models.Model):
-    author = models.EmbeddedField(
-        model_container=Entity
-    )
+    author = models.ForeignKey(Entity, on_delete=models.CASCADE)
     text = models.TextField(default="")
-
-    class Meta:
-        abstract = True
+    
 
 class Section(models.Model):
-    points = models.ArrayField(
-        model_container=Point
-    )
+    points = models.ManyToManyField(Point)
 
-    class Meta:
-        abstract = True
+    
 
 class Tweet(models.Model):
     url = models.CharField(max_length = 200)
     title = models.CharField(max_length = 200)
     subtitle = models.CharField(max_length = 200)
     time = models.CharField(max_length = 200)
-    publisher = models.EmbeddedField(
-        model_container=Entity
-    )
-    author = models.EmbeddedField(
-        model_container=Entity
-    )
+    publisher = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name = "publisher")
+    author = models.ForeignKey(Entity, on_delete=models.CASCADE, related_name = "author")
     image = models.CharField(max_length = 200)
-    sections = models.ArrayField(
-        model_container=Section
-    )
+    sections = models.ManyToManyField(Section)
     updated_date=models.CharField(max_length=200)
     

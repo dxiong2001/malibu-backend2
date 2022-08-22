@@ -9,7 +9,10 @@ from api.models import Tweet
 from api.serializers import TweetSerializer
 
 from datetime import datetime
-
+import pymongo
+from django.conf import settings
+from decouple import config
+from bson.objectid import ObjectId
 
 def processSection(section_list, section_titles, quotes, summary, author_entity, iterations):
     SectionList = []
@@ -87,20 +90,21 @@ def updateTweet(url, article_url, iterations):
     date_now = datetime.now()
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
+    Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
 
-    print(current_date)
     
-    tweets = Tweet.objects.get(url = url)
-    print("id: ",tweets.id)
-    tweets.updated_date = current_date
-    tweets.save()
-        
+
+    my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
+    dbname = my_client['Tweets']
+
+    # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
+    collection_name = dbname["api_tweet"]
+    post = collection_name.find_one({"url":article_url})
+    post['sections'] = SectionList
+    post['updated_date'] = current_date 
+    collection_name.update_one({'url':article_url}, {"$set": post}, upsert=False)
     
-    
-    
-    
-    return Tweet_
+    return post
 
 def getTweet(url, article_url, iterations):
 
@@ -117,7 +121,7 @@ def getTweet(url, article_url, iterations):
     
     article_people = get_names(article_sections)
     attributed_quotes = get_quotes(article_sections, article_people)
-    #print(attributed_quotes)
+    
     title, subtitle, author, date, image = getArticleInfo(page_content)
     publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
@@ -128,49 +132,15 @@ def getTweet(url, article_url, iterations):
     date_now = datetime.now()
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
+    Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
+    print(Tweet_['_id'])
+    
+    my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
+    dbname = my_client['Tweets']
 
-    print(current_date)
-    
-    djongo_tweet = Tweet()
-    djongo_tweet.url = article_url
-    djongo_tweet.author = authorEntity
-    djongo_tweet.time = date
-    djongo_tweet.title = title
-    djongo_tweet.subtitle = subtitle
-    djongo_tweet.image = image
-    djongo_tweet.publisher = publisherEntity
-    djongo_tweet.sections = SectionList
-    djongo_tweet.updated_date = current_date
-    
-    djongo_tweet.save()
-    # print("--- %s seconds ---" % (time.time() - start_time))
-    
-    
-    # tweet_obj = Tweet.objects.filter(url = article_url)
-
-    
-    # if(len(tweet_obj)>0):
-        
-    #     tweets_serializer=TweetSerializer(tweet_obj[0])
-    #     tweet_object = tweets_serializer.data
-        
-    #     print("filtered")
-        
-    #     Tweet_['updated_date'] = current_date
-    #     Tweet_['created_date'] = json.loads(tweet_object['tweet'])['created_date']
-    #     json_tweet = json.dumps(Tweet_)
-    #     Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
-    # else:
-    #     Tweet_['created_date'] = current_date
-    #     json_tweet = json.dumps(Tweet_)
-    #     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         print("valid")
-    #     else:
-    #         print("not valid:\n", serializer.errors)
-    
+    # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
+    collection_name = dbname["api_tweet"]
+    collection_name.insert_one(Tweet_)
     
     return Tweet_
 
