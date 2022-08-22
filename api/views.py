@@ -17,6 +17,7 @@ q = Queue(connection=conn)
 
 def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
+        print(Tweet.objects.values())
         tweets = list(Tweet.objects.values())
         
         if(len(tweets)>5):
