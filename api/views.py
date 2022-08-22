@@ -18,11 +18,12 @@ def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
         my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
         dbname = my_client['Tweets']
-
+        
         # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
         collection_name = dbname["api_tweet"]
         tweets = collection_name.find({})
-        if(tweets.count()>5):
+        tweet_len = collection_name.find({})
+        if(len(list(tweet_len))>5):
             tweets = tweets[0:5]
         
         tweets_return = []
