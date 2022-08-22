@@ -61,6 +61,44 @@ def processSection(section_list, section_titles, quotes, summary, author_entity,
     return SectionList
 
 
+def updateTweet(url, article_url, iterations):
+
+    texttiler = tt.TextTilingTokenizer(w=30, k=40)
+    summary = Summarizer(texttiler)
+
+    page_content = get_html(url)
+    body_content = getArticleBody(page_content)
+    article_sections, article_p, article_p2, article_subtitles = getArticleBodySections(body_content)
+    
+    if(len(article_sections)==1):
+        article_body_text = "\n\n".join(article_p)
+        article_sections = summary.texttile(article_body_text)
+    
+    article_people = get_names(article_sections)
+    attributed_quotes = get_quotes(article_sections, article_people)
+    #print(attributed_quotes)
+    title, subtitle, author, date, image = getArticleInfo(page_content)
+    publisher = getArticlePublisher(page_content)
+    authorEntity = createSingularEntity(author)
+    publisherEntity = createSingularEntity(publisher)
+    
+    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
+
+    date_now = datetime.now()
+    current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
+
+    Tweet_ = {'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
+
+    print(current_date)
+    
+    tweets = Tweet.objects.get(url = url)
+        
+    tweets.updated_date = current_date
+    tweets.save()
+    
+    
+    return Tweet_
+
 def getTweet(url, article_url, iterations):
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
@@ -87,37 +125,48 @@ def getTweet(url, article_url, iterations):
     date_now = datetime.now()
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList}
+    Tweet_ = {'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
 
     print(current_date)
     
+    djongo_tweet = Tweet()
+    djongo_tweet.url = article_url
+    djongo_tweet.author = authorEntity
+    djongo_tweet.time = date
+    djongo_tweet.title = title
+    djongo_tweet.subtitle = subtitle
+    djongo_tweet.image = image
+    djongo_tweet.publisher = publisherEntity
+    djongo_tweet.sections = SectionList
+    djongo_tweet.updated_date = current_date
     
+    djongo_tweet.save()
     # print("--- %s seconds ---" % (time.time() - start_time))
     
     
-    tweet_obj = Tweet.objects.filter(url = article_url)
+    # tweet_obj = Tweet.objects.filter(url = article_url)
 
     
-    if(len(tweet_obj)>0):
+    # if(len(tweet_obj)>0):
         
-        tweets_serializer=TweetSerializer(tweet_obj[0])
-        tweet_object = tweets_serializer.data
+    #     tweets_serializer=TweetSerializer(tweet_obj[0])
+    #     tweet_object = tweets_serializer.data
         
-        print("filtered")
+    #     print("filtered")
         
-        Tweet_['updated_date'] = current_date
-        Tweet_['created_date'] = json.loads(tweet_object['tweet'])['created_date']
-        json_tweet = json.dumps(Tweet_)
-        Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
-    else:
-        Tweet_['created_date'] = current_date
-        json_tweet = json.dumps(Tweet_)
-        serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
-        if serializer.is_valid():
-            serializer.save()
-            print("valid")
-        else:
-            print("not valid:\n", serializer.errors)
+    #     Tweet_['updated_date'] = current_date
+    #     Tweet_['created_date'] = json.loads(tweet_object['tweet'])['created_date']
+    #     json_tweet = json.dumps(Tweet_)
+    #     Tweet.objects.filter(url = article_url).update(tweet = json_tweet)
+    # else:
+    #     Tweet_['created_date'] = current_date
+    #     json_tweet = json.dumps(Tweet_)
+    #     serializer = TweetSerializer(data={'url': article_url, 'tweet': json_tweet})
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         print("valid")
+    #     else:
+    #         print("not valid:\n", serializer.errors)
     
     
     return Tweet_

@@ -17,26 +17,23 @@ q = Queue(connection=conn)
 
 def tweetsApi(request, *args, **kwargs):
     if request.method=='GET':
-        tweets = Tweet.objects.all()
+        tweets = list(Tweet.objects.values())
         
+        if(len(tweets)>5):
+            tweets = tweets[0:5]
         
+        # tweet_objects = tweets_serializer.data
         
-        tweets_serializer=TweetSerializer(tweets, many=True)
-        tweet_objects = tweets_serializer.data
-        #print(tweets_serializer)
-        array_tweets=[]
-        i = 0
-        for t in tweet_objects:
+        # array_tweets=[]
+        # i = 0
+        # for t in tweet_objects:
             
-            array_tweets.append(json.loads(t['tweet']))
-            # try:
-            #     array_tweets.append(json.loads(t['tweet']))
-            # except:
-            #     array_tweets.append(t['tweet'])
-            if i==4:
-                break
-            i+=1
-        return JsonResponse(array_tweets, safe=False)
+        #     array_tweets.append(json.loads(t['tweet']))
+            
+        #     if i==4:
+        #         break
+        #     i+=1
+        return JsonResponse(tweets, safe=False)
     return JsonResponse("Invalid request", safe=False)
 
 
@@ -58,21 +55,11 @@ def api_home(request, *args, **kwargs):
     url = urllib.parse.unquote(article_url)
     
     # if request.method=="GET":
-    try:
-        tweets = Tweet.objects.all()
-        tweets_serializer=TweetSerializer(tweets, many=True)
-        tweet_objects = tweets_serializer.data
-        
-        #print(tweet_objects)
-
-        for t in tweet_objects:
-            db_tweet_url = t['url']
-            
-            if(db_tweet_url==article_url):
-                return JsonResponse(json.loads(t['tweet']), safe=False)
-        
-    except:
-        pass
+    tweets = list(Tweet.objects.values())
+    for t in tweets:
+        print(t)
+        if t['url'] == url:
+            return JsonResponse(t, safe=False)
 
     Tweet_ = getTweet(url, article_url, 50)
     
