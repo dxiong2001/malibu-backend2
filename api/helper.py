@@ -65,12 +65,12 @@ def processSection(section_list, section_titles, quotes, summary, author_entity,
     return SectionList
 
 
-def updateTweet(url, article_url, iterations):
+def updateTweet(article_url, iterations):
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
 
-    page_content = get_html(url)
+    page_content = get_html(article_url)
     body_content = getArticleBody(page_content)
     article_sections, article_p, article_p2, article_subtitles = getArticleBodySections(body_content)
     
@@ -82,9 +82,7 @@ def updateTweet(url, article_url, iterations):
     attributed_quotes = get_quotes(article_sections, article_people)
     #print(attributed_quotes)
     title, subtitle, author, date, image = getArticleInfo(page_content)
-    publisher = getArticlePublisher(page_content)
     authorEntity = createSingularEntity(author)
-    publisherEntity = createSingularEntity(publisher)
     
     SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
     
@@ -93,8 +91,6 @@ def updateTweet(url, article_url, iterations):
     date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
-
     
 
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
@@ -102,19 +98,20 @@ def updateTweet(url, article_url, iterations):
 
     # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
     collection_name = dbname["api_tweet"]
-    post = collection_name.find_one({"url":article_url})
+    post = collection_name.find_one({'URL': article_url})
     post['sections'] = SectionList
-    post['updated_date'] = current_date 
-    collection_name.update_one({'url':article_url}, {"$set": post}, upsert=False)
+    post['updatedAt'] = current_date
+    post['visitedCnt'] += 1
+    collection_name.update_one({'URL':article_url}, {"$set": post}, upsert=False)
     
     return post
 
-def getTweet(url, article_url, iterations):
+def getTweet(article_url, iterations):
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
 
-    page_content = get_html(url)
+    page_content = get_html(article_url)
     body_content = getArticleBody(page_content)
     article_sections, article_p, article_p2, article_subtitles = getArticleBodySections(body_content)
     
@@ -136,7 +133,7 @@ def getTweet(url, article_url, iterations):
     date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'_id': ObjectId(),'url': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'sections': SectionList, 'updated_date': current_date}
+    Tweet_ = {'_id': ObjectId(),'URL': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'visitedCnt': 1, 'sections': SectionList, 'updatedAt': current_date}
     print(Tweet_['_id'])
     
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))

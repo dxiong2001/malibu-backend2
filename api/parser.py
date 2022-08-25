@@ -131,6 +131,9 @@ def get_names(section_list):
     people_extended.append(temp)
   return people_extended
 
+def extract_quote(sentence):
+  return re.findall('"([^"]*)"', sentence)[0]
+
 def get_quotes(section_list, people_extended):
   sentences1 = []
   for s in section_list:
@@ -311,13 +314,14 @@ def getImage(name):
 
 
 def createEntity(name, userName, screenName, profileImg):
-  return {'name': name, 'user_name': userName, 'screen_name': screenName, 'profile_image': profileImg}
+  return {'name': name, 'userName': userName, 'screenName': screenName, 'profileImg': profileImg}
 
 def createQuote(name, quote):
   is_verified, screen_name, user_name, profile_img = getTwitterInfo(name)
   author = createEntity(name, user_name, screen_name, profile_img)
+  # return {'author': author, 'text': extract_quote(quote)}
   return {'author': author, 'text': quote}
-  
+
 def createSingularEntity(name):
   is_verified, screen_name, user_name, profile_img = getTwitterInfo(name)
   return createEntity(name, user_name, screen_name, profile_img)

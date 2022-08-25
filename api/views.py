@@ -19,15 +19,17 @@ def tweetsApi(request, *args, **kwargs):
         my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
         dbname = my_client['Tweets']
 
-        # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
         collection_name = dbname["api_tweet"]
         tweets = collection_name.find({})
-        tweet_len = collection_name.find({})
-        if(len(list(tweet_len))>5):
-            tweets = tweets[0:5]
         
+        tweet_list = list(tweets)
+        
+        tweets_sorted = sorted(tweet_list, key=lambda d: d['visitedCnt'],reverse=True) 
+        if(len(tweet_list)>5):
+            tweets_sorted = tweets_sorted[0:5]
+        print(tweets_sorted)
         tweets_return = []
-        for t in tweets:
+        for t in tweets_sorted:
             return_tweet = t
             return_tweet['_id'] = str(return_tweet['_id'])
             tweets_return.append(return_tweet)
@@ -42,47 +44,40 @@ def api_home(request, *args, **kwargs):
     
     
     body_data = {}
-    # try:
-    #     body_data = json.loads(body) # string of JSON data -> python dict
-    # except:
-    #     pass
-
-    # print(body_data)
+    
     body_data['params'] = dict(request.GET)
-    article_url = body_data['params']['url'][0]
-    url = urllib.parse.unquote(article_url)
+    url = body_data['params']['url'][0]
+    
+    if url[-1]=="/":
+        url = url[:-1]
+    print(url)
     
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
     dbname = my_client['Tweets']
 
-    # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
     collection_name = dbname["api_tweet"]
     tweets = collection_name.find({})
     for t in tweets:
         print(t)
-        if t['url'] == url:
+        if t['URL'] == url:
             return_tweet = t
             return_tweet['_id'] = str(return_tweet['_id'])
             return JsonResponse(return_tweet, safe=False)
 
-    Tweet_ = getTweet(url, article_url, 50)
+    Tweet_ = getTweet(url, 50)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
 
 def tweetUpdate(request, *args, **kwargs):
     body_data = {}
-    # try:
-    #     body_data = json.loads(body) # string of JSON data -> python dict
-    # except:
-    #     pass
-
-    # print(body_data)
-    body_data['params'] = dict(request.GET)
-    article_url = body_data['params']['url'][0]
-    url = urllib.parse.unquote(article_url)
     
-
-    Tweet_ = updateTweet(url, article_url, 200)
+    body_data['params'] = dict(request.GET)
+    url = body_data['params']['url'][0]
+    
+    if url[-1]=="/":
+        url = url[:-1]
+    
+    Tweet_ = updateTweet(url, 200)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
     
