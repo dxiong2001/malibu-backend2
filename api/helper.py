@@ -101,7 +101,6 @@ def updateTweet(article_url, iterations):
     post = collection_name.find_one({'URL': article_url})
     post['sections'] = SectionList
     post['updatedAt'] = current_date
-    post['visitedCnt'] += 1
     collection_name.update_one({'URL':article_url}, {"$set": post}, upsert=False)
     
     return post

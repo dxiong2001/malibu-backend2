@@ -56,13 +56,30 @@ def api_home(request, *args, **kwargs):
     dbname = my_client['Tweets']
 
     collection_name = dbname["api_tweet"]
-    tweets = collection_name.find({})
-    for t in tweets:
-        print(t)
-        if t['URL'] == url:
-            return_tweet = t
-            return_tweet['_id'] = str(return_tweet['_id'])
-            return JsonResponse(return_tweet, safe=False)
+    
+    try:
+        tweets = collection_name.find_one({'URL': url})
+
+        num = tweets['visitedCnt']
+        
+        return_tweet = tweets
+        return_tweet['visitedCnt']+=1
+        return_tweet['_id'] = str(return_tweet['_id'])
+        collection_name.update_one({'URL':url}, {"$set": {'visitedCnt': num+1}}, upsert=False)
+        return JsonResponse(return_tweet, safe=False)
+    except:
+        pass
+    # for t in tweets:
+    #     print(t)
+    #     if t['URL'] == url:
+    #         return_tweet = t
+    #         return_tweet['_id'] = str(return_tweet['_id'])
+    #         return_tweet['visitedCnt']+=1
+
+    #         t['visitedCnt'] += 1
+    #         collection_name.update_one({'URL':url}, {"$set": t}, upsert=False)
+
+    #         return JsonResponse(return_tweet, safe=False)
 
     Tweet_ = getTweet(url, 50)
     Tweet_['_id'] = str(Tweet_['_id'])
