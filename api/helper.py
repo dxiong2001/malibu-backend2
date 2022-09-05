@@ -1,6 +1,7 @@
 import json
 from .parser import *
 from .extraction import Summarizer, textrank
+from .abstraction import abs_summarization
 
 from nltk.tokenize import sent_tokenize
 import nltk.tokenize.texttiling as tt
@@ -15,14 +16,15 @@ from decouple import config
 from bson.objectid import ObjectId
 import pytz
 
-def processSection(section_list, section_titles, quotes, summary, author_entity, iterations):
+def processSection(section_list, section_titles, quotes, summary, author_entity, iterations, article_percent):
     SectionList = []
     
     sentences1 = []
     for s in section_list:
         sentences1.append(sent_tokenize(s.replace("\n","").strip()))
     
-
+    abs_summ = abs_summarization(section_list)
+    print(abs_summ)
     for s in range(len(section_list)):
         
 
@@ -31,7 +33,7 @@ def processSection(section_list, section_titles, quotes, summary, author_entity,
         Points = []
 
         
-        text_rank = summary.generate([section_list[s].strip()], top = 3, iterations=iterations)
+        text_rank = summary.generate([section_list[s].strip()], top = 3, iterations=iterations, percentage = article_percent)
         text = text_rank[0]
         sorted_text = text
 
@@ -65,8 +67,8 @@ def processSection(section_list, section_titles, quotes, summary, author_entity,
     return SectionList
 
 
-def updateTweet(article_url, iterations):
-
+def updateTweet(article_url, iterations, articlePercent):
+    #25 -> 5 sections, #30 -> 4 sections #45 -> 3 sections, #50 -> 2 sections
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
 
@@ -84,7 +86,7 @@ def updateTweet(article_url, iterations):
     title, subtitle, author, date, image = getArticleInfo(page_content)
     authorEntity = createSingularEntity(author)
     
-    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
+    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations, articlePercent)
     
 
     tz = pytz.timezone('America/Los_Angeles')
