@@ -1,7 +1,7 @@
 from transformers import pipeline
 
-classifier = pipeline("summarization", model="t5-base")
-
+#classifier = pipeline("summarization", model="t5-base")
+classifier = pipeline("summarization")
 
 def abs_summarization(article_sections):
     summ_sections = []
