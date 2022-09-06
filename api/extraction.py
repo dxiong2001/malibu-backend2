@@ -65,13 +65,14 @@ class Summarizer:
   def generate(self, tokenized, iterations, top=1, percentage=0.2):
     length_t = len(tokenized)
     l = []
-    
+    print(percentage)
     for t in range(length_t):
       
       section_text = []
       
       ranked_text = textrank(tokenized[t], iterations)
-      loop = min(top,len(ranked_text))
+      loop = len(ranked_text)
+      #loop = min(top,len(ranked_text))
       num_char_section = len(tokenized[t])
       num_char = 0
       for i in range(loop):

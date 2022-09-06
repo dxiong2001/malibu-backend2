@@ -23,17 +23,16 @@ def processSection(section_list, section_titles, quotes, summary, author_entity,
     for s in section_list:
         sentences1.append(sent_tokenize(s.replace("\n","").strip()))
     
-    abs_summ = abs_summarization(section_list)
-    print(abs_summ)
+    #abs_summ = abs_summarization(section_list)
+    
     for s in range(len(section_list)):
         
 
         # text_to_rank = "\n\n".join(section_list[s])
         
         Points = []
-
-        
-        text_rank = summary.generate([section_list[s].strip()], top = 3, iterations=iterations, percentage = article_percent)
+        #Points.append({'author': author_entity, 'text': abs_summ[s]})
+        text_rank = summary.generate([section_list[s].strip()],top=3, iterations=iterations, percentage = article_percent)
         text = text_rank[0]
         sorted_text = text
 
@@ -107,7 +106,7 @@ def updateTweet(article_url, iterations, articlePercent):
     
     return post
 
-def getTweet(article_url, iterations):
+def getTweet(article_url, iterations,  articlePercent):
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summary = Summarizer(texttiler)
@@ -128,7 +127,7 @@ def getTweet(article_url, iterations):
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
     
-    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations = iterations)
+    SectionList = processSection(article_sections, article_subtitles, attributed_quotes, summary, authorEntity, iterations, articlePercent)
 
     tz = pytz.timezone('America/Los_Angeles')
     date_now = datetime.now(tz)

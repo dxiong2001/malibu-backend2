@@ -62,24 +62,30 @@ def api_home(request, *args, **kwargs):
     dbname = my_client['Tweets']
 
     collection_name = dbname["api_tweet"]
-    
-    try:
-        tweets = collection_name.find_one({'URL': url})
+    print(article_percent)
+    if article_percent != 0.2:
+        print("test")
+        Tweet_ = getTweet(url, 50, article_percent)
+        Tweet_['_id'] = str(Tweet_['_id'])
+        return JsonResponse(Tweet_, safe=False)
+    else:
+        try:
+            tweets = collection_name.find_one({'URL': url})
 
-        num = tweets['visitedCnt']
+            num = tweets['visitedCnt']
+            
+            return_tweet = tweets
+            return_tweet['visitedCnt']+=1
+            return_tweet['_id'] = str(return_tweet['_id'])
+            collection_name.update_one({'URL':url}, {"$set": {'visitedCnt': num+1}}, upsert=False)
+            return JsonResponse(return_tweet, safe=False)
+        except:
+            pass
         
-        return_tweet = tweets
-        return_tweet['visitedCnt']+=1
-        return_tweet['_id'] = str(return_tweet['_id'])
-        collection_name.update_one({'URL':url}, {"$set": {'visitedCnt': num+1}}, upsert=False)
-        return JsonResponse(return_tweet, safe=False)
-    except:
-        pass
-    
 
-    Tweet_ = getTweet(url, 50, article_percent)
-    Tweet_['_id'] = str(Tweet_['_id'])
-    return JsonResponse(Tweet_, safe=False)
+        Tweet_ = getTweet(url, 50, article_percent)
+        Tweet_['_id'] = str(Tweet_['_id'])
+        return JsonResponse(Tweet_, safe=False)
 
 def tweetUpdate(request, *args, **kwargs):
     body_data = {}
@@ -95,7 +101,7 @@ def tweetUpdate(request, *args, **kwargs):
         article_percent = int(body_data['params']['tweetNum'][0])/100
     except:
         pass
-    Tweet_ = updateTweet(url, 200, article_percent)
+    Tweet_ = updateTweet(url, 100, article_percent)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
     
