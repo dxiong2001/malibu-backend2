@@ -42,7 +42,7 @@ def textrank(text, iterations):
   scores = nx.pagerank_numpy(nx_graph)
   #print(scores[0])
   top_sentence={sentence:scores[index] for index,sentence in enumerate(sentences)}
-  top=dict(sorted(top_sentence.items(), key=lambda x: x[1], reverse=True)[:4])
+  top=dict(sorted(top_sentence.items(), key=lambda x: x[1], reverse=True))
   
   #print(sentences_clean)
   summ = []
@@ -62,31 +62,22 @@ class Summarizer:
     tokenized = self.texttiler.tokenize(text)
     return tokenized
 
-  def generate(self, tokenized, iterations, top=1, percentage=0.2):
+  def generate(self, tokenized, iterations):
     length_t = len(tokenized)
-    l = []
-    print(percentage)
+    rank_sections = []
+    
     for t in range(length_t):
       
-      section_text = []
-      
       ranked_text = textrank(tokenized[t], iterations)
-      loop = len(ranked_text)
-      #loop = min(top,len(ranked_text))
-      num_char_section = len(tokenized[t])
-      num_char = 0
-      for i in range(loop):
-        section_text.append(ranked_text[i].replace("\n\n",""))
-        num_char = num_char + len(ranked_text[i])
-        if(num_char/num_char_section > percentage):
-          break
-
-      l.append(section_text)
-      #textrank(tokenized[t])
-      #summ[t][0]=textrank(tokenized[t])[0]
-      #summ[t][1]=textrank(tokenized[t])#[1]
       
-    return l
+      for ranked in range(len(ranked_text)):
+        ranked_text[ranked] = ranked_text[ranked].replace("\n\n","")
+        
+
+      rank_sections.append(ranked_text)
+      
+       
+    return rank_sections
 
   def process(self, raw_text):
     processed_text = ""
