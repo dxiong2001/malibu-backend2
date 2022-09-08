@@ -71,12 +71,12 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
         tweetNum -= sum(section_len)
         it = 0
         while tweetNum > 0:
-            
+            print(section_len)
             if(section_len[it]<len(sections[it])):
-                section_len[s]+=1
+                section_len[it]+=1
                 tweetNum-=1
             it = (it+1)%section_num
-
+        print(section_len)
         for s in range(section_num):
             section = sections[s]
             len_s = len(section)
