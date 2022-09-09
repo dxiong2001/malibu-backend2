@@ -61,7 +61,7 @@ def api_home(request, *args, **kwargs):
     dbname = my_client['Tweets']
 
     collection_name = dbname["api_tweet"]
-    
+    visitor_count = 0
     try:
         tweets = collection_name.find_one({'URL': url, 'tweetNum': tweetNum})
         print("found in db")
@@ -74,10 +74,15 @@ def api_home(request, *args, **kwargs):
         return JsonResponse(return_tweet, safe=False)
     except:
         print("not found in db")
+        try:
+            tweets = collection_name.find_one({'URL': url})
+            visitor_count = tweets['visitedCnt']
+        except:
+            pass
         collection_name.delete_one({'URL':url})
     
 
-    Tweet_ = getTweet(url, 100, tweetNum)
+    Tweet_ = getTweet(url, 100, tweetNum, visitor_count)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
 

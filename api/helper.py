@@ -203,7 +203,8 @@ def updateTweet(article_url, iterations, tweetNum = 10):
     
     return post
 
-def getTweet(article_url, iterations, tweetNum = -1):
+def getTweet(article_url, iterations, tweetNum, visitorCount):
+    visitorCount += 1
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summarizer = Summarizer(texttiler)
@@ -237,7 +238,7 @@ def getTweet(article_url, iterations, tweetNum = -1):
     date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'_id': ObjectId(),'URL': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'visitedCnt': 1, 'tweetNum': num_tweets,'sections': SectionList, 'updatedAt': current_date}
+    Tweet_ = {'_id': ObjectId(),'URL': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'visitedCnt': visitorCount, 'tweetNum': num_tweets,'sections': SectionList, 'updatedAt': current_date}
     
     
 
