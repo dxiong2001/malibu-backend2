@@ -60,8 +60,13 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
         # print(section_titles)
         # print(section_len)
         
-        for p in proportions:
-            section_len.append(math.trunc(p*tweetNum))
+        if tweetNum == section_num:
+            for s in range(section_num):
+                section_len.append(1)
+        else:
+            for p in proportions:
+                section_len.append(math.trunc(p*tweetNum))
+        
         for s in range(title_num):
             #print(s)
             if(tweetNum==0):
