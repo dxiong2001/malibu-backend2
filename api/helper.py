@@ -2,6 +2,7 @@ import json
 from .parser import *
 from .extraction import Summarizer, textrank
 from .abstraction import abs_summarization
+from .decontexualizer import decontexualizer1
 
 from nltk.tokenize import sent_tokenize
 import nltk.tokenize.texttiling as tt
@@ -134,7 +135,10 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
             #Points.append({'author': author_entity, 'text': abs_summ[s]})
             text_rank = summarizer.generate([section_list[s].strip()], iterations)
             text = text_rank[0]
-            ranked_text.append(text)
+            text1 = []
+            for t in text:
+                text1.append(decontexualizer1(t))
+            ranked_text.append(text1)
             section_len.append(sum(map(len, text)))
         for s in section_len:
             section_proportions.append(s/sum(section_len))
