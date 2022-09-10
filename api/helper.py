@@ -22,7 +22,7 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
     SectionsRanked = []
     section_num = len(sections)
     section_len = []
-
+    
     count_sent = sum( [ len(el) for el in sections])
     if(tweetNum > count_sent):
         tweetNum = count_sent
@@ -60,12 +60,16 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
         # print(section_titles)
         # print(section_len)
         
-        if tweetNum == section_num:
+        if return_count == section_num:
             for s in range(section_num):
                 section_len.append(1)
         else:
             for p in proportions:
                 section_len.append(math.trunc(p*tweetNum))
+
+        if 0 in section_len:
+            for s in range(section_num):
+                section_len[s] = 1
         
         for s in range(title_num):
             #print(s)
