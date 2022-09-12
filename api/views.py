@@ -109,15 +109,19 @@ def tweetEdit(request, *args, **kwargs):
     
     body_data['params'] = dict(request.GET)
     url = body_data['params']['url'][0]
-    
+    tweetPercent = 0.25
     if url[-1]=="/":
         url = url[:-1]
     tweetNum = -1
-    
     try:
-        tweetNum = int(body_data['params']['tweetNum'][0])
+        tweetPercent = int(body_data['params']['tweetLen'][0])/100
     except:
-        pass
-    Tweet_ = updateTweet(url, 100, tweetNum)
+        
+        try:
+            tweetNum = int(body_data['params']['tweetNum'][0])
+        except:
+            pass
+    print(tweetNum)
+    Tweet_ = editTweet(url, 100, tweetNum, tweetPercent)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)

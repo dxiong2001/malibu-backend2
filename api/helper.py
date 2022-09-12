@@ -18,7 +18,7 @@ from bson.objectid import ObjectId
 import pytz
 import math
 
-def processRanking(sections, proportions, tweetNum, section_titles, sentences):
+def processRanking(sections, proportions, tweetNum, section_titles, sentences, tweetPercent):
     SectionsRanked = []
     section_num = len(sections)
     section_len = []
@@ -26,19 +26,27 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
     count_sent = sum( [ len(el) for el in sections])
     if(tweetNum > count_sent):
         tweetNum = count_sent
+    if(tweetNum < section_num and tweetNum != -1):
+        tweetNum = section_num
     return_count = tweetNum
     title_num = len(section_titles)
+    
     print(tweetNum)
     if(tweetNum < 0):
+        return_count=0
         sorted_text = []
         for sec in sections:
-            length_s = sum(map(len, sec))
+            length_s = 0
+            for s in sec:
+                length_s += len(s.split(" "))
             sorted_section = []
             count = 0
             for s in sec:
                 sorted_section.append(s)
-                count += len(s)
-                if(count/length_s > 0.25):
+                count += len(s.split(" "))
+                return_count+=1
+                # print(length_s)
+                if(count/length_s > tweetPercent):
                     break
             sorted_text.append(sorted_section)
         for s in range(section_num):
@@ -113,7 +121,7 @@ def processRanking(sections, proportions, tweetNum, section_titles, sentences):
 
 
 
-def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum):
+def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum, tweetPercent = 0.25):
     SectionList = []
     ranked_text = []
     section_proportions = []
@@ -155,7 +163,7 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
         collection.insert_one({'_id': ObjectId(), "URL": url, "rankList": ranked_text, "proportions": section_proportions})
 
 
-    sorted_text, num_tweets = processRanking(ranked_text, section_proportions, tweetNum, section_titles, sentences1)
+    sorted_text, num_tweets = processRanking(ranked_text, section_proportions, tweetNum, section_titles, sentences1, tweetPercent)
     
     for s in range(len(section_list)):
         Points = []
@@ -178,7 +186,7 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
     return SectionList, num_tweets
 
 
-def updateTweet(article_url, iterations, tweetNum = 10):
+def updateTweet(article_url, iterations, tweetNum):
     #25 -> 5 sections, #30 -> 4 sections #45 -> 3 sections, #50 -> 2 sections
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summarizer = Summarizer(texttiler)
@@ -216,6 +224,44 @@ def updateTweet(article_url, iterations, tweetNum = 10):
     
     return post
 
+def editTweet(article_url, iterations, tweetNum, tweetPercent):
+    #25 -> 5 sections, #30 -> 4 sections #45 -> 3 sections, #50 -> 2 sections
+    texttiler = tt.TextTilingTokenizer(w=30, k=40)
+    summarizer = Summarizer(texttiler)
+
+    my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
+    db = my_client['Tweets']
+    collection = db["api_rank"]
+
+    collection_info = db["api_article"]
+
+    db_obj = collection_info.find_one({'URL': article_url})
+    article_sections = db_obj['sections']
+    article_subtitles = db_obj['subtitles']
+    attributed_quotes = db_obj['quotes']
+    
+    
+    
+
+    tz = pytz.timezone('America/Los_Angeles')
+    date_now = datetime.now(tz)
+    current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
+
+    # Now get/create collection name (remember that you will see the database in your mongodb cluster only after you create a collection
+    collection= db["api_tweet"]
+    post = collection.find_one({'URL': article_url})
+
+    authorEntity = post['author']
+    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum, tweetPercent)
+
+
+    post['sections'] = SectionList
+    post['updatedAt'] = current_date
+    post['tweetNum'] = num_tweets
+    collection.update_one({'URL':article_url}, {"$set": post}, upsert=False)
+    
+    return post
+
 def getTweet(article_url, iterations, tweetNum, visitorCount):
     visitorCount += 1
 
@@ -228,7 +274,11 @@ def getTweet(article_url, iterations, tweetNum, visitorCount):
     page_content = get_html(article_url)
     body_content = getArticleBody(page_content)
     article_sections, article_p, article_p2, article_subtitles = getArticleBodySections(body_content)
-    
+
+    text_article = " ".join(article_p)
+    words_list = text_article.split(" ")
+
+    print(len(words_list))
     if(len(article_sections)==1):
         article_body_text = "\n\n".join(article_p)
         article_sections = summarizer.texttile(article_body_text)
@@ -251,7 +301,7 @@ def getTweet(article_url, iterations, tweetNum, visitorCount):
     date_now = datetime.now(tz)
     current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
 
-    Tweet_ = {'_id': ObjectId(),'URL': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'visitedCnt': visitorCount, 'tweetNum': num_tweets,'sections': SectionList, 'updatedAt': current_date}
+    Tweet_ = {'_id': ObjectId(),'URL': article_url, 'author': authorEntity, 'time': date, 'title': title, 'subtitle': subtitle, 'image': image, 'publisher': publisherEntity, 'visitedCnt': visitorCount, 'tweetNum': num_tweets, 'numWords': len(words_list), 'sections': SectionList, 'updatedAt': current_date}
     
     
 
