@@ -18,110 +18,142 @@ from bson.objectid import ObjectId
 import pytz
 import math
 
-def processRanking(sections, proportions, tweetNum, section_titles, sentences, tweetPercent):
+def processRanking(sections, proportions, tweetPercent, section_titles, sentences):
     SectionsRanked = []
     section_num = len(sections)
     section_len = []
     
-    count_sent = sum( [ len(el) for el in sections])
-    if(tweetNum > count_sent):
-        tweetNum = count_sent
-    if(tweetNum < section_num and tweetNum != -1):
-        tweetNum = section_num
-    return_count = tweetNum
+    # count_sent = sum( [ len(el) for el in sections])
+    # if(tweetNum > count_sent):
+    #     tweetNum = count_sent
+    # if(tweetNum < section_num and tweetNum != -1):
+    #     tweetNum = section_num
+    # return_count = tweetNum
     title_num = len(section_titles)
     
-    print(tweetNum)
-    if(tweetNum < 0):
-        return_count=0
-        sorted_text = []
-        for sec in sections:
-            length_s = 0
-            for s in sec:
-                length_s += len(s.split(" "))
-            sorted_section = []
-            count = 0
-            for s in sec:
-                sorted_section.append(s)
-                count += len(s.split(" "))
-                return_count+=1
-                # print(length_s)
-                if(count/length_s > tweetPercent):
-                    break
-            sorted_text.append(sorted_section)
-        for s in range(section_num):
+    
+    sorted_text = []
+    for sec in sections:
+        length_s = 0
+        for s in sec:
+            length_s += len(s.split(" "))
+        sorted_section = []
+        count = 0
+        for s in sec:
+            sorted_section.append(s)
+            count += len(s.split(" "))
             
-            title = False
-            if len(section_titles)>1 and section_titles[s] != "Introduction":
-                title = True
-
-            try:
-                indices = {c: i for i, c in enumerate(sentences[s])}
-                sorted_text[s] = sorted(sorted_text[s], key=indices.get)
-            except:
-                pass
-
-            if title:
-                sorted_text[s].insert(0, section_titles[s])
-            SectionsRanked.append(sorted_text[s])
-    else:
-        # print(section_titles)
-        # print(section_len)
-        
-        if return_count == section_num:
-            for s in range(section_num):
-                section_len.append(1)
-        else:
-            for p in proportions:
-                section_len.append(math.trunc(p*tweetNum))
-
-        if 0 in section_len:
-            for s in range(section_num):
-                section_len[s] = 1
-        
-        for s in range(title_num):
-            #print(s)
-            if(tweetNum==0):
+            # print(length_s)
+            if(count/length_s > tweetPercent):
                 break
-            if(section_titles[s]!="Introduction"):
-                tweetNum-=1
+        sorted_text.append(sorted_section)
+    for s in range(section_num):
+        
+        title = False
+        if len(section_titles)>1 and section_titles[s] != "Introduction":
+            title = True
 
-        tweetNum -= sum(section_len)
-        it = 0
-        while tweetNum > 0:
-            print(section_len)
-            if(section_len[it]<len(sections[it])):
-                section_len[it]+=1
-                tweetNum-=1
-            it = (it+1)%section_num
-        print(section_len)
-        for s in range(section_num):
-            section = sections[s]
-            len_s = len(section)
-            title = False
-            if len(section_titles)>1 and section_titles[s] != "Introduction":
-                len_s -= 1
-                title = True
-            top = min(len_s, section_len[s])
+        try:
+            indices = {c: i for i, c in enumerate(sentences[s])}
+            sorted_text[s] = sorted(sorted_text[s], key=indices.get)
+        except:
+            pass
 
-            sorted_text = section[:top]
+        if title:
+            sorted_text[s].insert(0, section_titles[s])
+        SectionsRanked.append(sorted_text[s])
 
-            try:
-                indices = {c: i for i, c in enumerate(sentences[s])}
-                sorted_text = sorted(sorted_text, key=indices.get)
-            except:
-                pass
+    # print(tweetNum)
+    # if(tweetNum < 0):
+    #     return_count=0
+    #     sorted_text = []
+    #     for sec in sections:
+    #         length_s = 0
+    #         for s in sec:
+    #             length_s += len(s.split(" "))
+    #         sorted_section = []
+    #         count = 0
+    #         for s in sec:
+    #             sorted_section.append(s)
+    #             count += len(s.split(" "))
+    #             return_count+=1
+    #             # print(length_s)
+    #             if(count/length_s > tweetPercent):
+    #                 break
+    #         sorted_text.append(sorted_section)
+    #     for s in range(section_num):
+            
+    #         title = False
+    #         if len(section_titles)>1 and section_titles[s] != "Introduction":
+    #             title = True
 
-            if title:
-                sorted_text.insert(0, section_titles[s])
-            SectionsRanked.append(sorted_text)
-    return SectionsRanked, return_count
+    #         try:
+    #             indices = {c: i for i, c in enumerate(sentences[s])}
+    #             sorted_text[s] = sorted(sorted_text[s], key=indices.get)
+    #         except:
+    #             pass
+
+    #         if title:
+    #             sorted_text[s].insert(0, section_titles[s])
+    #         SectionsRanked.append(sorted_text[s])
+    # else:
+    #     # print(section_titles)
+    #     # print(section_len)
+        
+    #     if return_count == section_num:
+    #         for s in range(section_num):
+    #             section_len.append(1)
+    #     else:
+    #         for p in proportions:
+    #             section_len.append(math.trunc(p*tweetNum))
+
+    #     if 0 in section_len:
+    #         for s in range(section_num):
+    #             section_len[s] = 1
+        
+    #     for s in range(title_num):
+    #         #print(s)
+    #         if(tweetNum==0):
+    #             break
+    #         if(section_titles[s]!="Introduction"):
+    #             tweetNum-=1
+
+    #     tweetNum -= sum(section_len)
+    #     it = 0
+    #     while tweetNum > 0:
+    #         print(section_len)
+    #         if(section_len[it]<len(sections[it])):
+    #             section_len[it]+=1
+    #             tweetNum-=1
+    #         it = (it+1)%section_num
+    #     print(section_len)
+    #     for s in range(section_num):
+    #         section = sections[s]
+    #         len_s = len(section)
+    #         title = False
+    #         if len(section_titles)>1 and section_titles[s] != "Introduction":
+    #             len_s -= 1
+    #             title = True
+    #         top = min(len_s, section_len[s])
+
+    #         sorted_text = section[:top]
+
+    #         try:
+    #             indices = {c: i for i, c in enumerate(sentences[s])}
+    #             sorted_text = sorted(sorted_text, key=indices.get)
+    #         except:
+    #             pass
+
+    #         if title:
+    #             sorted_text.insert(0, section_titles[s])
+    #         SectionsRanked.append(sorted_text)
+    return SectionsRanked, tweetPercent
             
         
 
 
 
-def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum, tweetPercent = 0.25):
+def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum):
     SectionList = []
     ranked_text = []
     section_proportions = []
@@ -163,7 +195,7 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
         collection.insert_one({'_id': ObjectId(), "URL": url, "rankList": ranked_text, "proportions": section_proportions})
 
 
-    sorted_text, num_tweets = processRanking(ranked_text, section_proportions, tweetNum, section_titles, sentences1, tweetPercent)
+    sorted_text, num_tweets = processRanking(ranked_text, section_proportions, tweetNum, section_titles, sentences1)
     
     for s in range(len(section_list)):
         Points = []
@@ -224,7 +256,7 @@ def updateTweet(article_url, iterations, tweetNum):
     
     return post
 
-def editTweet(article_url, iterations, tweetNum, tweetPercent):
+def editTweet(article_url, iterations, tweetNum):
     #25 -> 5 sections, #30 -> 4 sections #45 -> 3 sections, #50 -> 2 sections
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summarizer = Summarizer(texttiler)
@@ -252,7 +284,7 @@ def editTweet(article_url, iterations, tweetNum, tweetPercent):
     post = collection.find_one({'URL': article_url})
 
     authorEntity = post['author']
-    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum, tweetPercent)
+    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum)
 
 
     post['sections'] = SectionList

@@ -46,10 +46,10 @@ def api_home(request, *args, **kwargs):
     
     body_data['params'] = dict(request.GET)
     url = body_data['params']['url'][0]
-    tweetNum = -1
+    tweetNum = 0.2
     
     try:
-        tweetNum = int(body_data['params']['tweetNum'][0])
+        tweetNum = int(body_data['params']['tweetNum'][0])/100
     except:
         pass
     
@@ -94,10 +94,10 @@ def tweetUpdate(request, *args, **kwargs):
     
     if url[-1]=="/":
         url = url[:-1]
-    tweetNum = -1
+    tweetNum = 0.2
     
     try:
-        tweetNum = int(body_data['params']['tweetNum'][0])
+        tweetNum = int(body_data['params']['tweetNum'][0])/100
     except:
         pass
     Tweet_ = updateTweet(url, 100, tweetNum)
@@ -109,19 +109,17 @@ def tweetEdit(request, *args, **kwargs):
     
     body_data['params'] = dict(request.GET)
     url = body_data['params']['url'][0]
-    tweetPercent = 0.25
+    #tweetPercent = 0.25
     if url[-1]=="/":
         url = url[:-1]
-    tweetNum = -1
-    try:
-        tweetPercent = int(body_data['params']['tweetLen'][0])/100
-    except:
+    tweetNum = 0.2
+    
         
-        try:
-            tweetNum = int(body_data['params']['tweetNum'][0])
-        except:
-            pass
+    try:
+        tweetNum = int(body_data['params']['tweetNum'][0])/100
+    except:
+        pass
     print(tweetNum)
-    Tweet_ = editTweet(url, 100, tweetNum, tweetPercent)
+    Tweet_ = editTweet(url, 100, tweetNum)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
