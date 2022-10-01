@@ -5,9 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 import urllib
 import nltk.tokenize.texttiling as tt
 from rest_framework.decorators import api_view
-from bson import json_util
-from api.models import Tweet
-from api.serializers import TweetSerializer
+from api.homepage import get_articles, get_info
+from datetime import date
 
 from rq import Queue
 from .worker import conn
@@ -15,27 +14,62 @@ from .worker import conn
 q = Queue(connection=conn)
 
 def tweetsApi(request, *args, **kwargs):
-    if request.method=='GET':
-        my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
-        dbname = my_client['Tweets']
 
-        collection_name = dbname["api_tweet"]
-        tweets = collection_name.find({})
+    param = "default"
+    body_data = {}
+    today = date.today()
+    today = today.strftime("%m/%d/%Y")
+    
+
+    # for url in urls:
+    #     getTweet(url, 100, 0.2, 0)
+    
+
+    my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
+    dbname = my_client['Tweets']
+
+    collection = dbname["api_home"]
+    try:
+        home = collection.find_one({'Date': today})['Info']
+        return JsonResponse(home, safe=False)
+    except:
+        collection.delete_one({})
+        try:
+            body_data['params'] = dict(request.GET)
+            param = body_data['params']['category'][0]
+        except:
+            pass
+        urls = get_articles(param)
+        info = get_info(urls)
+    collection.insert_one({'Date': today, 'Info': info})
+
+    
+    
+    return JsonResponse(info, safe=False)
         
-        tweet_list = list(tweets)
+
+# def tweetsApi(request, *args, **kwargs):
+#     if request.method=='GET':
+#         my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
+#         dbname = my_client['Tweets']
+
+#         collection_name = dbname["api_tweet"]
+#         tweets = collection_name.find({})
         
-        tweets_sorted = sorted(tweet_list, key=lambda d: d['visitedCnt'],reverse=True) 
-        if(len(tweet_list)>5):
-            tweets_sorted = tweets_sorted[0:5]
-        print(tweets_sorted)
-        tweets_return = []
-        for t in tweets_sorted:
-            return_tweet = t
-            return_tweet['_id'] = str(return_tweet['_id'])
-            tweets_return.append(return_tweet)
-        return JsonResponse(tweets_return, safe=False)
+#         tweet_list = list(tweets)
         
-    return JsonResponse("Invalid request", safe=False)
+#         tweets_sorted = sorted(tweet_list, key=lambda d: d['visitedCnt'],reverse=True) 
+#         if(len(tweet_list)>5):
+#             tweets_sorted = tweets_sorted[0:5]
+#         print(tweets_sorted)
+#         tweets_return = []
+#         for t in tweets_sorted:
+#             return_tweet = t
+#             return_tweet['_id'] = str(return_tweet['_id'])
+#             tweets_return.append(return_tweet)
+#         return JsonResponse(tweets_return, safe=False)
+        
+#     return JsonResponse("Invalid request", safe=False)
 
 
 @api_view(['GET', 'POST'])
@@ -80,7 +114,7 @@ def api_home(request, *args, **kwargs):
         except:
             pass
         collection_name.delete_one({'URL':url})
-    
+
 
     Tweet_ = getTweet(url, 100, tweetNum, visitor_count)
     Tweet_['_id'] = str(Tweet_['_id'])
@@ -123,3 +157,16 @@ def tweetEdit(request, *args, **kwargs):
     Tweet_ = editTweet(url, 100, tweetNum)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
+
+def tweetHome(request, *args, **kwargs):
+    param = "default"
+    body_data = {}
+    try:
+        body_data['params'] = dict(request.GET)
+        param = body_data['params']['category'][0]
+    except:
+        pass
+    urls = get_articles(param)
+    # for url in urls:
+    #     getTweet(url, 100, 0.2, 0)
+    return JsonResponse(urls, safe=False)

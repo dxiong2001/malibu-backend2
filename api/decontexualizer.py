@@ -12,6 +12,7 @@ def decontexualizer1(sentence):
     begin_conj2 = sentence.lower().startswith(tuple(conj2))
     # print(begin_conj_adverb)
 
+
     parts = sentence
 
     if(begin_conj_adverb):

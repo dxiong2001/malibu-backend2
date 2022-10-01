@@ -7,5 +7,6 @@ urlpatterns = [
     path('tweet/', views.api_home),
     path('tweets', views.tweetsApi),
     path('tweetUpdate/', views.tweetUpdate),
-    path('tweetEdit/', views.tweetEdit)
+    path('tweetEdit/', views.tweetEdit),
+    path('tweetHome', views.tweetHome)
 ]
