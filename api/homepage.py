@@ -55,10 +55,11 @@ def get_info(urls):
 def get_title_picture(url):
     page = requests.get(url)
     page_content = BeautifulSoup(page.content, 'html.parser')
+    publisher = page_content.find('img', class_='header__logo').get("alt")
     header = page_content.find('div', class_='Article-header')
     title = header.find('h1', class_='u-entryTitle').get_text()
     image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
     image = image_html.get("src")
-    return {'_id': '','URL': url, 'author': '', 'time': '', 'title': title, 'subtitle': '', 'image': image, 'publisher': '', 'visitedCnt': '', 'tweetNum': '', 'numWords': 0, 'sections': '', 'updatedAt': ''}
+    return {'_id': '','URL': url, 'author': '', 'time': '', 'title': title, 'subtitle': '', 'image': image, 'publisher': publisher, 'visitedCnt': '', 'tweetNum': '', 'numWords': 0, 'sections': '', 'updatedAt': ''}
 
 
