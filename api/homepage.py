@@ -59,6 +59,6 @@ def get_title_picture(url):
     title = header.find('h1', class_='u-entryTitle').get_text()
     image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
     image = image_html.get("src")
-    return {'URL':url,'title':title, 'image':image}
+    return {'_id': '','URL': url, 'author': '', 'time': '', 'title': title, 'subtitle': '', 'image': image, 'publisher': '', 'visitedCnt': '', 'tweetNum': '', 'numWords': 0, 'sections': '', 'updatedAt': ''}
 
 

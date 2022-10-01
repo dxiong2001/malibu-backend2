@@ -19,7 +19,7 @@ def tweetsApi(request, *args, **kwargs):
     body_data = {}
     today = date.today()
     today = today.strftime("%m/%d/%Y")
-    
+    print(today)
 
     # for url in urls:
     #     getTweet(url, 100, 0.2, 0)
@@ -31,6 +31,7 @@ def tweetsApi(request, *args, **kwargs):
     collection = dbname["api_home"]
     try:
         home = collection.find_one({'Date': today})['Info']
+        print("found1")
         return JsonResponse(home, safe=False)
     except:
         collection.delete_one({})
