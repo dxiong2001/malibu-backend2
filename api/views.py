@@ -13,17 +13,13 @@ from .worker import conn
 
 q = Queue(connection=conn)
 
-def tweetSearch(request, *args, **kwargs):
+def search(request, *args, **kwargs):
     body_data = {}
     
     body_data['params'] = dict(request.GET)
     search_string = body_data['params']['q'][0]
     print(search_string)
-    params = search_string.split(" ")
-    print(params)
-    search_string2 = "%20".join(params)
-    print(search_string2)
-    url_search_string = "https://www.popsci.com/search/" + search_string2
+    url_search_string = "https://www.popsci.com/search/" + search_string
 
     return JsonResponse(get_search_results(url_search_string), safe=False)
 

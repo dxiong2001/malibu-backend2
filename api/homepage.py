@@ -64,19 +64,20 @@ def get_title_picture(url):
     title = header.find('h1', class_='u-entryTitle').get_text()
     image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
     image = image_html.get("src")
-    return {'_id': '','URL': url, 'author': '', 'time': '', 'title': title, 'subtitle': '', 'image': image, 'publisher': publisher, 'visitedCnt': '', 'tweetNum': '', 'numWords': 0, 'sections': '', 'updatedAt': ''}
+    return {'URL': url, 'title': title, 'image': image, 'publisher': publisher}
 
 
 def get_search_results(url):
     page = requests.get(url)
     page_content = BeautifulSoup(page.content, 'html.parser')
+    publisher = page_content.find('img', class_='header__logo').get("alt")
     cards = page_content.find_all('div', class_="search-item col-lg-3 col-md-6 col-sm-12 d-flex align-items-stretch")
     results = []
     for c in cards:
         title = c.find('h5', class_="card-title").get_text()
-        image = c.find('img', class_ ="card-img-top article-image u-image-16-9").get_text()
+        image = c.find('img', class_ ="card-img-top article-image u-image-16-9").get("src")
         url_card = c.find('a', class_="article-item__title").get('href')
-        results.append({'URL': url_card, 'title': title, 'image': image,})
+        results.append({'URL': url_card, 'title': title, 'image': image, 'publisher': publisher})
         if(len(results)>5):
             break
     return results

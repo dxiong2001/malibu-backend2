@@ -9,5 +9,5 @@ urlpatterns = [
     path('tweetUpdate/', views.tweetUpdate),
     path('tweetEdit/', views.tweetEdit),
     path('tweetHome', views.tweetHome),
-    path('tweetSearch', views.tweetSearch)
+    path('search', views.search)
 ]
