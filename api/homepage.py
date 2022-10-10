@@ -2,6 +2,12 @@ from api.parser import get_html
 from bs4 import BeautifulSoup
 import requests
 import random
+import pytz
+from datetime import datetime
+import hashlib
+import math
+from bson.objectid import ObjectId
+
 
 def get_articles(category):
     page_content = get_html("https://www.popsci.com/")
@@ -64,7 +70,12 @@ def get_title_picture(url):
     title = header.find('h1', class_='u-entryTitle').get_text()
     image_html = page_content.findAll('img', class_ = 'SingleImage-image Article-thumbnail wp-post-image')[0]
     image = image_html.get("src")
-    return {'URL': url, 'title': title, 'image': image, 'publisher': publisher}
+
+    tz = pytz.timezone('America/Los_Angeles')
+    date_now = datetime.now(tz)
+    current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
+
+    return {'_id': str(abs(hash(url)))[0:12], 'URL': url, 'title': title, 'image': image, 'time': current_date, 'publisher': {'name': publisher}}
 
 
 def get_search_results(url):
@@ -73,11 +84,20 @@ def get_search_results(url):
     publisher = page_content.find('img', class_='header__logo').get("alt")
     cards = page_content.find_all('div', class_="search-item col-lg-3 col-md-6 col-sm-12 d-flex align-items-stretch")
     results = []
+
+    tz = pytz.timezone('America/Los_Angeles')
+    date_now = datetime.now(tz)
+    current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
+    
     for c in cards:
         title = c.find('h5', class_="card-title").get_text()
         image = c.find('img', class_ ="card-img-top article-image u-image-16-9").get("src")
         url_card = c.find('a', class_="article-item__title").get('href')
-        results.append({'URL': url_card, 'title': title, 'image': image, 'publisher': publisher})
+
+
+        print(str(abs(hash(url_card)))[0:12])
+        
+        results.append({'_id': str(abs(hash(url_card)))[0:12],'URL': url_card, 'title': title, 'time': current_date, 'image': image, 'publisher': {'name': publisher}})
         if(len(results)>5):
             break
     return results
