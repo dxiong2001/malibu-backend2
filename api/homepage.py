@@ -85,19 +85,16 @@ def get_search_results(url):
     cards = page_content.find_all('div', class_="search-item col-lg-3 col-md-6 col-sm-12 d-flex align-items-stretch")
     results = []
 
-    tz = pytz.timezone('America/Los_Angeles')
-    date_now = datetime.now(tz)
-    current_date = date_now.strftime("%m/%d/%Y, %H:%M:%S")
     
     for c in cards:
         title = c.find('h5', class_="card-title").get_text()
         image = c.find('img', class_ ="card-img-top article-image u-image-16-9").get("src")
         url_card = c.find('a', class_="article-item__title").get('href')
-
+        date = c.find('span', class_="article-item__date").get_text()
 
         print(str(abs(hash(url_card)))[0:12])
         
-        results.append({'_id': str(abs(hash(url_card)))[0:12],'URL': url_card, 'title': title, 'time': current_date, 'image': image, 'publisher': {'name': publisher}})
-        if(len(results)>5):
+        results.append({'_id': str(abs(hash(url_card)))[0:12],'URL': url_card, 'title': title, 'time': date, 'image': image, 'publisher': {'name': publisher}})
+        if(len(results)>8):
             break
     return results
