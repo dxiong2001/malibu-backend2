@@ -161,7 +161,7 @@ def tweetEdit(request, *args, **kwargs):
     
         
     try:
-        tweetNum = int(body_data['params']['tweetNum'][0])/100
+        tweetNum = int(body_data['params']['tweetNum'][0])
     except:
         pass
     print(tweetNum)

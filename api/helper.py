@@ -272,7 +272,16 @@ def editTweet(article_url, iterations, tweetNum):
     article_subtitles = db_obj['subtitles']
     attributed_quotes = db_obj['quotes']
     
-    
+    if(tweetNum > 1):
+        wordcount = 0
+        for sec in article_sections:
+            wordcount += len(sec.split())
+        print(wordcount)
+        tweetNum = (tweetNum * 4) / wordcount 
+        if tweetNum > 1:
+            tweetNum = 1
+
+    print(tweetNum)
     
 
     tz = pytz.timezone('America/Los_Angeles')
