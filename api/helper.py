@@ -153,7 +153,7 @@ def processRanking(sections, proportions, tweetPercent, section_titles, sentence
 
 
 
-def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum):
+def processSection(url, section_list, section_titles, quotes, summarizer, author_entity, iterations, tweetNum, tweetLen):
     SectionList = []
     ranked_text = []
     section_proportions = []
@@ -199,7 +199,15 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
     
     for s in range(len(section_list)):
         Points = []
-        for sort in sorted_text[s]:
+        visited = []
+        index = 0
+        print("tweetLen: ", tweetLen)
+        sorted_text_section = sorted_text[s]
+        for sort in sorted_text_section:
+            index += 1
+            if(sort in visited):
+                continue
+            visited.append(sort)
             isQuote = False
             
             for q in quotes[s]:
@@ -211,7 +219,14 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
                     break
             if not isQuote:
                 Points.append({'author': author_entity, 'text': sort})
-        
+            if(len(sort) < tweetLen):
+                author = Points[-1]['author']
+                if(index < len(sorted_text_section)):
+                    visited.append(sorted_text_section[index])
+                    text = Points[-1]['text']
+                    text = text + " " + sorted_text_section[index]
+                    Points[-1] = {'author': author, 'text': text}
+                    index += 1
         
         SectionList.append({'points': Points})
     
@@ -256,7 +271,7 @@ def updateTweet(article_url, iterations, tweetNum):
     
     return post
 
-def editTweet(article_url, iterations, tweetNum):
+def editTweet(article_url, iterations, tweetNum, tweetLen):
     #25 -> 5 sections, #30 -> 4 sections #45 -> 3 sections, #50 -> 2 sections
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
     summarizer = Summarizer(texttiler)
@@ -293,7 +308,7 @@ def editTweet(article_url, iterations, tweetNum):
     post = collection.find_one({'URL': article_url})
 
     authorEntity = post['author']
-    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum)
+    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum, tweetLen)
 
 
     post['sections'] = SectionList
@@ -303,7 +318,7 @@ def editTweet(article_url, iterations, tweetNum):
     
     return post
 
-def getTweet(article_url, iterations, tweetNum, visitorCount):
+def getTweet(article_url, iterations, tweetNum, visitorCount, tweetLen):
     visitorCount += 1
 
     texttiler = tt.TextTilingTokenizer(w=30, k=40)
@@ -336,7 +351,7 @@ def getTweet(article_url, iterations, tweetNum, visitorCount):
     authorEntity = createSingularEntity(author)
     publisherEntity = createSingularEntity(publisher)
     
-    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum)
+    SectionList, num_tweets = processSection(article_url, article_sections, article_subtitles, attributed_quotes, summarizer, authorEntity, iterations, tweetNum, tweetLen)
 
     tz = pytz.timezone('America/Los_Angeles')
     date_now = datetime.now(tz)

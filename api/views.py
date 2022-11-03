@@ -13,6 +13,7 @@ from .worker import conn
 
 q = Queue(connection=conn)
 
+# grab articles based on search result
 def search(request, *args, **kwargs):
     body_data = {}
     
@@ -23,6 +24,7 @@ def search(request, *args, **kwargs):
 
     return JsonResponse(get_search_results(url_search_string), safe=False)
 
+# get top tweets
 def tweetsApi(request, *args, **kwargs):
 
     param = "default"
@@ -101,6 +103,10 @@ def api_home(request, *args, **kwargs):
     if url[-1]=="/":
         url = url[:-1]
     
+    try:
+        tweetLen = int(body_data['params']['tweetLen'][0])
+    except:
+        tweetLen = 120
     
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
     dbname = my_client['Tweets']
@@ -127,7 +133,7 @@ def api_home(request, *args, **kwargs):
         collection_name.delete_one({'URL':url})
 
 
-    Tweet_ = getTweet(url, 100, tweetNum, visitor_count)
+    Tweet_ = getTweet(url, 100, tweetNum, visitor_count, tweetLen)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
 
@@ -154,6 +160,12 @@ def tweetEdit(request, *args, **kwargs):
     
     body_data['params'] = dict(request.GET)
     url = body_data['params']['url'][0]
+    
+    try:
+        tweetLen = int(body_data['params']['tweetLen'][0])
+    except:
+        tweetLen = 120
+
     #tweetPercent = 0.25
     if url[-1]=="/":
         url = url[:-1]
@@ -162,10 +174,12 @@ def tweetEdit(request, *args, **kwargs):
         
     try:
         tweetNum = int(body_data['params']['tweetNum'][0])
+        if tweetNum > 1:
+            tweetNum = tweetNum / 100
     except:
         pass
     print(tweetNum)
-    Tweet_ = editTweet(url, 100, tweetNum)
+    Tweet_ = editTweet(url, 100, tweetNum, tweetLen)
     Tweet_['_id'] = str(Tweet_['_id'])
     return JsonResponse(Tweet_, safe=False)
 
