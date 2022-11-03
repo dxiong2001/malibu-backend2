@@ -219,14 +219,19 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
                     break
             if not isQuote:
                 Points.append({'author': author_entity, 'text': sort})
-            if(len(sort) < tweetLen):
+            sent = sort
+            while(len(sent) < tweetLen):
+                print("test")
                 author = Points[-1]['author']
                 if(index < len(sorted_text_section)):
                     visited.append(sorted_text_section[index])
                     text = Points[-1]['text']
                     text = text + " " + sorted_text_section[index]
+                    sent = text
                     Points[-1] = {'author': author, 'text': text}
                     index += 1
+                else:
+                    break
         
         SectionList.append({'points': Points})
     
