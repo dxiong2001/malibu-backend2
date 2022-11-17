@@ -1,7 +1,7 @@
 import json
 from .parser import *
 from .extraction import Summarizer, textrank
-from .abstraction import abs_summarization
+from .abstraction import abs_summarization, abs_summarization2
 from .decontexualizer import decontexualizer1
 
 from nltk.tokenize import sent_tokenize
@@ -157,11 +157,26 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
     SectionList = []
     ranked_text = []
     section_proportions = []
-
+    section_list_processed = []
+    
+    
     sentences1 = []
+    print("num sections:", len(section_list))
     for s in section_list:
         sentences1.append(sent_tokenize(s.replace("\n","").strip()))
-    
+        section_list_processed.append(s.replace("\n",""))
+    print(section_list_processed)
+
+
+    abs_summary_sections = abs_summarization2(section_list_processed)
+    i = 1
+    for abs in abs_summary_sections:
+        print("Section", i,":","\n")
+        print("Text:", section_list_processed[i-1],"\n")
+        print("Summary:", abs,"\n\n\n")
+        
+        i+=1
+
     #abs_summ = abs_summarization(section_list)
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
     db = my_client['Tweets']
@@ -204,6 +219,9 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
         print("section")
         print("tweetLen: ", tweetLen)
         sorted_text_section = sorted_text[s]
+        if(abs_summary_sections[s]!="."):
+            Points.append({'author': author_entity, 'text': abs_summary_sections[s]})
+
         for sort in sorted_text_section:
             
             if(sort in visited):

@@ -4,6 +4,8 @@ import urllib
 import urllib.parse
 from decouple import config
 import time
+import os
+import openai
 
 # from transformers import pipeline
 
@@ -39,4 +41,36 @@ def abs_summarization(article_sections):
         summ_sections.append(abs_summ)
     print("--- %s seconds ---" % (time.time() - start_time))
     return summ_sections
+
+def process_text(text):
+    split_text = text.split(".")
+    return_text = ""
+    for split in split_text:
+        print(split)
+        if(split!=" " or split!="." or split!="  "):
+            return_text = return_text + split.strip() + ". "
+        
+    return_text = return_text.replace("\n","")
+    return return_text.strip()
+
+
+def abs_summarization2(article_sections):
+
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    abs_summary_sections = []
+    for section in article_sections:
+        
+        response = openai.Completion.create(
+            model="text-davinci-002",
+            prompt = "Summarize this for a second-grade student:\n\n"+section,
+            temperature=0.7,
+            max_tokens=64,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+        print(response)
+        abs_summary_sections.append(process_text(response['choices'][0]['text']))
+    return abs_summary_sections
+
     
