@@ -106,7 +106,7 @@ def api_home(request, *args, **kwargs):
     try:
         tweetLen = int(body_data['params']['tweetLen'][0])
     except:
-        tweetLen = 120
+        tweetLen = 140
     
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
     dbname = my_client['Tweets']
@@ -164,7 +164,7 @@ def tweetEdit(request, *args, **kwargs):
     try:
         tweetLen = int(body_data['params']['tweetLen'][0])
     except:
-        tweetLen = 120
+        tweetLen = 140
 
     #tweetPercent = 0.25
     if url[-1]=="/":

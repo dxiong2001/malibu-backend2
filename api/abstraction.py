@@ -58,19 +58,24 @@ def abs_summarization2(article_sections):
 
     openai.api_key = os.getenv("OPENAI_API_KEY")
     abs_summary_sections = []
+    
     for section in article_sections:
         
-        response = openai.Completion.create(
-            model="text-davinci-002",
-            prompt = "Summarize this for a second-grade student:\n\n"+section,
-            temperature=0.7,
-            max_tokens=64,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
-        print(response)
-        abs_summary_sections.append(process_text(response['choices'][0]['text']))
+        #use try/except in case openai server goes down
+        try:
+            response = openai.Completion.create(
+                model="text-davinci-002",
+                prompt = "Summarize this for a second-grade student:\n\n"+section,
+                temperature=0.7,
+                max_tokens=64,
+                top_p=1.0,
+                frequency_penalty=0.0,
+                presence_penalty=0.0
+            )
+            print(response)
+            abs_summary_sections.append(process_text(response['choices'][0]['text']))
+        except:
+            abs_summary_sections.append(".")
     return abs_summary_sections
 
     

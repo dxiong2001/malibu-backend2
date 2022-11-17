@@ -32,10 +32,14 @@ def getArticleBody(page_content):
   parent=[]
   for r in remove_strong:
     parent.append(r.find_parent("p"))
+  print(parent)
+  print(body_content)
   # for r in remove_strong:
   #   r.extract()
   for p in parent:
-    p.extract()
+    if p is not None:
+      p.extract()
+  print(body_content)
   return body_content
 
 # extracts sections based on html h2 tags

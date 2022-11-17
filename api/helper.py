@@ -169,13 +169,14 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
 
 
     abs_summary_sections = abs_summarization2(section_list_processed)
-    i = 1
-    for abs in abs_summary_sections:
-        print("Section", i,":","\n")
-        print("Text:", section_list_processed[i-1],"\n")
-        print("Summary:", abs,"\n\n\n")
+    
+    # i = 1
+    # for abs in abs_summary_sections:
+    #     print("Section", i,":","\n")
+    #     print("Text:", section_list_processed[i-1],"\n")
+    #     print("Summary:", abs,"\n\n\n")
         
-        i+=1
+    #     i+=1
 
     #abs_summ = abs_summarization(section_list)
     my_client = pymongo.MongoClient(config('CONNECTION_STRING'))
@@ -196,7 +197,7 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
             # text_to_rank = "\n\n".join(section_list[s])
             
             
-            #Points.append({'author': author_entity, 'text': abs_summ[s]})
+            # Points.append({'author': author_entity, 'text': abs_summary_sections[s]})
             text_rank = summarizer.generate([section_list[s].strip()], iterations)
             text = text_rank[0]
             text1 = []
@@ -219,7 +220,10 @@ def processSection(url, section_list, section_titles, quotes, summarizer, author
         print("section")
         print("tweetLen: ", tweetLen)
         sorted_text_section = sorted_text[s]
+
+        #abstractive summarization added as first tweet
         if(abs_summary_sections[s]!="."):
+            print("test")
             Points.append({'author': author_entity, 'text': abs_summary_sections[s]})
 
         for sort in sorted_text_section:
